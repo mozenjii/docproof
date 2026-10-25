@@ -16,6 +16,7 @@ packages = ["src/docproof"]
 
 [dependency-groups]
 dev = [
+    "pip-audit>=2.10.1",
     "pyright>=1.1.414",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
@@ -30,6 +31,9 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 # D enforces a docstring on every module and public symbol; S is the bandit security set.
 select = ["E", "W", "F", "I", "N", "B", "UP", "SIM", "C4", "RUF", "D", "S", "PT"]
+# S603 fires on every subprocess call made without a shell, so it cannot tell safe from unsafe.
+# The rules that do (S602 shell=True, S604, S605 os.system) stay on.
+ignore = ["S603"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -39,7 +43,7 @@ convention = "google"
 "tests/**" = ["D103", "S101"]
 
 [tool.pyright]
-include = ["src", "tests"]
+include = ["src", "tests", "scripts"]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"
 venvPath = "."
