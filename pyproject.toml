@@ -17,6 +17,8 @@ packages = ["src/docproof"]
 [dependency-groups]
 dev = [
     "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.2",
 ]
 
@@ -42,3 +44,17 @@ pythonVersion = "3.12"
 typeCheckingMode = "strict"
 venvPath = "."
 venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "--strict-config", "-ra"]
+xfail_strict = true
+
+[tool.coverage.run]
+source = ["docproof"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
