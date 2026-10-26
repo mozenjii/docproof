@@ -40,8 +40,8 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 # Test functions are named for the behaviour they check and are not public API; asserts are the point.
-"tests/**" = ["D103", "S101"]
-# The benchmark draws synthetic pages from a seeded PRNG on purpose; nothing there is a secret.
+"tests/**" = ["D103", "S101", "S311"]
+# Benchmark pages and test matrices come from a seeded PRNG on purpose; nothing there is a secret.
 "bench/**" = ["S311"]
 
 [tool.ruff.lint.isort]
