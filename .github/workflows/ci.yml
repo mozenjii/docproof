@@ -1,11 +1,11 @@
 # Runs the same script as local development: scripts/check.py.
 #
-# Gated today: lockfile in sync, formatting, lint (including docstrings and the bandit
-# security rules), strict types, tests with an 80% branch-coverage floor, dependency audit.
+# Gated today: lockfile in sync, document provenance, formatting, lint (including docstrings
+# and the bandit security rules), strict types, tests with an 80% branch-coverage floor
+# (including the safe-logging source policy), dependency audit.
 #
 # Not gated yet, because there is nothing for them to check:
 #   - browser tests, accessibility and performance budgets: added with the review UI
-#   - a guard that only synthetic or public documents are committed: added with the data handling work
 #   - model-quality regression on the evaluation set: added with the first extraction baseline
 name: ci
 

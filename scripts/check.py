@@ -47,6 +47,7 @@ def gates() -> list[Gate]:
     py = sys.executable
     return [
         Gate("lockfile", (_uv_executable(), "lock", "--check")),
+        Gate("provenance", (py, "-m", "docproof.provenance")),
         Gate("format", (py, "-m", "ruff", "format", "--check", ".")),
         Gate("lint", (py, "-m", "ruff", "check", ".")),
         Gate("types", (py, "-m", "pyright")),
