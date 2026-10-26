@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "pattern": "tests/test_provenance.py",
+    "source": "synthetic",
+    "origin": "tests/test_provenance.py",
+    "license": null
+  }
+]
