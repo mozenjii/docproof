@@ -112,7 +112,10 @@ def _numeric_date(
         return _one(_date(year, b, a), text)
     if day_first is False:
         return _one(_date(year, a, b), text)
-    # Both numbers are 1-12 here, so both readings are real calendar dates.
+    # Both numbers are at most 12 and differ. A zero makes both readings impossible; otherwise
+    # both are real calendar dates, since every month has at least 12 days.
+    if a == 0 or b == 0:
+        return Invalid(f"{text!r} has a zero day or month")
     return Ambiguous(tuple(sorted((dt.date(year, b, a), dt.date(year, a, b)))))
 
 

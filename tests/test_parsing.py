@@ -39,6 +39,8 @@ def test_parse_date(text: str, day_first: bool | None, expected: object) -> None
         "31/02/2026",
         "2026-02-30",
         "13/13/2026",
+        "00/04/2026",  # a zero day or month is impossible in either order
+        "04/00/2026",
         "03/04-2026",  # mixed separators
         "3 Sept 2026",
         "3-Apr 2026",
