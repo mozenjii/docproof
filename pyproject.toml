@@ -43,6 +43,8 @@ convention = "google"
 "tests/**" = ["D103", "S101", "S311"]
 # Benchmark pages and test matrices come from a seeded PRNG on purpose; nothing there is a secret.
 "bench/**" = ["S311"]
+# Bootstrap resampling must be reproducible from a seed; it draws no secrets.
+"src/docproof/scoring.py" = ["S311"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["docproof", "bench"]
