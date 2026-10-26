@@ -45,6 +45,8 @@ convention = "google"
 "bench/**" = ["S311"]
 # Bootstrap resampling must be reproducible from a seed; it draws no secrets.
 "src/docproof/scoring.py" = ["S311"]
+# Synthetic documents must be reproducible from a seed; they contain no secrets.
+"src/docproof/synth/sample.py" = ["S311"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["docproof", "bench"]
