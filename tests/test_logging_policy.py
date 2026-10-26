@@ -1,6 +1,11 @@
 """Source policy: document data reaches output only through docproof.safelog.
 
-This runs over the package source, so the rule holds for code written later, not just today's.
+This scans the package source, so the rule holds for code written later, not just today's. It is a
+static check over names, so a determined contributor can still get around it (``getattr`` with a
+built string, for one); what it guarantees is that every ordinary way of writing to a log or a
+stream outside safelog fails the build and has to be argued for. Exceptions raised by docproof can
+quote values in their messages; command-line entry points must catch them and log through
+``SafeLogger.error``, which drops the message.
 """
 
 import ast
@@ -11,7 +16,16 @@ import pytest
 PACKAGE = Path(__file__).resolve().parents[1] / "src" / "docproof"
 SOURCES = sorted(PACKAGE.rglob("*.py"))
 LOGGING_OWNER = PACKAGE / "safelog.py"
-BANNED_MODULES = {"logging", "traceback", "pprint"}
+BANNED_MODULES = {
+    "logging",
+    "traceback",
+    "pprint",
+    "warnings",
+    "importlib",
+    "builtins",
+    "faulthandler",
+}
+STREAMS = {"stdout", "stderr", "__stdout__", "__stderr__"}
 
 
 def _imports(tree: ast.AST) -> set[str]:
@@ -24,26 +38,34 @@ def _imports(tree: ast.AST) -> set[str]:
     return names
 
 
-def _prints_outside_main(tree: ast.AST) -> list[int]:
-    """Line numbers of print() calls not inside a function called main."""
-    offending: list[int] = []
+def _top_level_main(tree: ast.Module) -> set[int]:
+    """Ids of nodes inside the module-level ``main`` function (not a method called main)."""
+    inside: set[int] = set()
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == "main":
+            inside.update(id(n) for n in ast.walk(node))
+    return inside
 
-    def visit(node: ast.AST, in_main: bool) -> None:
-        for child in ast.iter_child_nodes(node):
-            inside = in_main
-            if isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
-                inside = child.name == "main"
-            if (
-                isinstance(child, ast.Call)
-                and isinstance(child.func, ast.Name)
-                and child.func.id == "print"
-                and not inside
-            ):
-                offending.append(child.lineno)
-            visit(child, inside)
 
-    visit(tree, in_main=False)
-    return offending
+def _violations(tree: ast.Module) -> list[str]:
+    """Every output route used outside the module-level main(), as 'line: what'."""
+    in_main = _top_level_main(tree)
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id == "print" and id(node) not in in_main:
+            found.append(f"{node.lineno}: print outside main()")
+        elif isinstance(node, ast.Name) and node.id == "__import__":
+            found.append(f"{node.lineno}: __import__")
+        elif isinstance(node, ast.Attribute):
+            if node.attr in STREAMS and id(node) not in in_main:
+                found.append(f"{node.lineno}: sys.{node.attr} outside main()")
+            if node.attr in {"logging", "_logging"}:
+                found.append(f"{node.lineno}: reaches a logging module through an attribute")
+        elif isinstance(node, ast.ImportFrom) and node.module == "docproof.safelog":
+            private = [a.name for a in node.names if a.name.startswith("_") or a.name == "logging"]
+            if private:
+                found.append(f"{node.lineno}: imports {private} from docproof.safelog")
+    return found
 
 
 def test_the_policy_sees_the_package() -> None:
@@ -60,14 +82,33 @@ def test_only_safelog_imports_output_modules(path: Path) -> None:
 
 
 @pytest.mark.parametrize("path", SOURCES, ids=lambda p: p.relative_to(PACKAGE).as_posix())
-def test_print_only_in_command_line_entry_points(path: Path) -> None:
-    lines = _prints_outside_main(ast.parse(path.read_text(encoding="utf-8")))
-    assert not lines, f"{path.name} prints outside main() at lines {lines}"
+def test_no_other_output_routes(path: Path) -> None:
+    found = _violations(ast.parse(path.read_text(encoding="utf-8")))
+    if path == LOGGING_OWNER:
+        found = [f for f in found if "attribute" not in f]  # safelog uses its own _logging
+    assert not found, f"{path.name}: {found}"
 
 
-def test_the_checks_catch_a_violation() -> None:
-    bad = ast.parse("import logging\nfrom traceback import format_exc\ndef f():\n    print(1)\n")
-    assert _imports(bad) >= {"logging", "traceback"}
-    assert _prints_outside_main(bad) == [4]
-    good = ast.parse("def main():\n    print('wrote 3 documents')\n")
-    assert _prints_outside_main(good) == []
+BYPASSES = {
+    "from docproof.safelog import _logging": "imports",
+    "import docproof.safelog as s\ns._logging.getLogger('x')": "attribute",
+    "__import__('logging')": "__import__",
+    "import sys\nsys.stderr.write('x')": "sys.stderr",
+    "p = print": "print outside",
+    "import builtins": "builtins",
+    "import importlib": "importlib",
+    "import warnings": "warnings",
+    "class C:\n    def main(self):\n        print('x')": "print outside",
+}
+
+
+@pytest.mark.parametrize("source", list(BYPASSES), ids=list(BYPASSES.values()))
+def test_the_policy_catches_known_bypasses(source: str) -> None:
+    tree = ast.parse(source)
+    reasons = " ".join(_violations(tree)) + " " + " ".join(sorted(_imports(tree)))
+    assert BYPASSES[source] in reasons
+
+
+def test_the_policy_allows_a_cli_main() -> None:
+    tree = ast.parse("import sys\ndef main():\n    print('ok')\n    sys.stderr.write('x')\n")
+    assert _violations(tree) == []
