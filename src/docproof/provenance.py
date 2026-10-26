@@ -257,6 +257,16 @@ def _check_pattern(pattern: str, index: int) -> None:
         raise RegistryError(
             f"record {index}: pattern {pattern!r} needs a literal first segment, not a wildcard"
         )
+    # Wildcards only in the file name, and never alone: "tests/**" or "data/*" would vouch for a
+    # whole directory, including documents added to it later.
+    if "**" in segments or any(_WILDCARDS.intersection(s) for s in segments[:-1]):
+        raise RegistryError(
+            f"record {index}: pattern {pattern!r} may use wildcards only in its last segment"
+        )
+    if not segments[-1].strip("*?[]"):
+        raise RegistryError(
+            f"record {index}: pattern {pattern!r} needs a literal part in its file name"
+        )
 
 
 def _names_repo_generator(origin: str) -> bool:
@@ -711,6 +721,14 @@ def list_history(repo: Path) -> list[TrackedEntry]:
     # A shallow clone (CI's default) would report "ok" for the commits it never fetched.
     if _git(git, repo, "rev-parse", "--is-shallow-repository").strip() != b"false":
         raise ListingError(f"{repo} is a shallow clone; fetch full history before --history")
+    # git log walks commits only. A tag can point straight at a blob or a tree, which a push
+    # carries but the walk below never sees, so such a ref is refused rather than ignored.
+    refs = _git(git, repo, "for-each-ref", "--format=%(objecttype) %(*objecttype) %(refname)")
+    for line in refs.decode("utf-8", errors="replace").splitlines():
+        own, _, rest = line.partition(" ")
+        peeled, _, name = rest.partition(" ")
+        if (peeled or own) in {"blob", "tree"}:
+            raise ListingError(f"ref {name} points at a {peeled or own}, not a commit")
     listing = _git(
         git,
         repo,

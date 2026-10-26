@@ -294,11 +294,13 @@ def test_glob_matching(pattern: str, path: str, expected: bool) -> None:
 
 
 def test_valid_registry_loads_in_order() -> None:
-    raw = [valid_entry(), synthetic_entry("bench/**", "python -m docproof.synth.dataset")]
+    raw = [valid_entry(), synthetic_entry("bench/pages/*.png", "python -m docproof.synth.dataset")]
     records = load_registry(raw)
     assert records == [
         ProvenanceRecord("assets/*.png", "public", "https://example.org/sample.png", "CC-BY-4.0"),
-        ProvenanceRecord("bench/**", "synthetic", "python -m docproof.synth.dataset", None),
+        ProvenanceRecord(
+            "bench/pages/*.png", "synthetic", "python -m docproof.synth.dataset", None
+        ),
     ]
 
 
@@ -325,7 +327,7 @@ def test_empty_registry_is_valid() -> None:
     ],
 )
 def test_synthetic_origins_naming_this_repository_are_accepted(origin: str) -> None:
-    assert load_registry([synthetic_entry("data/**", origin)])[0].origin == origin
+    assert load_registry([synthetic_entry("data/samples/*.pdf", origin)])[0].origin == origin
 
 
 @pytest.mark.parametrize(
@@ -350,7 +352,7 @@ def test_synthetic_origins_naming_this_repository_are_accepted(origin: str) -> N
 )
 def test_synthetic_origins_outside_this_repository_are_refused(origin: str) -> None:
     with pytest.raises(RegistryError, match="must name a generator in this repository"):
-        load_registry([synthetic_entry("data/**", origin)])
+        load_registry([synthetic_entry("data/samples/*.pdf", origin)])
 
 
 @pytest.mark.parametrize(
@@ -374,7 +376,7 @@ def test_patterns_that_could_cover_everything_are_refused(pattern: str, message:
         load_registry([synthetic_entry(pattern)])
 
 
-@pytest.mark.parametrize("pattern", ["data/**", "data/*.pdf", "assets/**/*.png", "logo.png"])
+@pytest.mark.parametrize("pattern", ["data/*.pdf", "data/samples/scan-?.png", "logo.png"])
 def test_patterns_with_a_literal_first_segment_are_accepted(pattern: str) -> None:
     assert load_registry([synthetic_entry(pattern)])[0].pattern == pattern
 
@@ -988,3 +990,30 @@ def test_git_that_cannot_start_fails_closed(repo: Path, monkeypatch: pytest.Monk
     monkeypatch.setattr(subprocess, "run", refuse)
     with pytest.raises(ListingError, match="cannot execute"):
         list_index(repo)
+
+
+@pytest.mark.parametrize("pattern", ["tests/**", "data/*", "data/**/x.png", "data/*/x.png", "a/?"])
+def test_patterns_that_vouch_for_a_whole_directory_are_refused(pattern: str) -> None:
+    record = {"pattern": pattern, "source": "synthetic", "origin": "scripts/x.py", "license": None}
+    with pytest.raises(RegistryError, match=r"wildcards only in its last segment|literal part"):
+        load_registry([record])
+
+
+def test_a_file_name_wildcard_is_still_allowed() -> None:
+    record = {
+        "pattern": "data/synthetic/*.png",
+        "source": "synthetic",
+        "origin": "python -m docproof.synth.dataset",
+        "license": None,
+    }
+    assert load_registry([record])[0].pattern == "data/synthetic/*.png"
+
+
+def test_list_history_refuses_a_tag_that_points_at_a_blob(repo: Path) -> None:
+    commit(repo, {"readme.txt": b"hello"})
+    loose = repo.parent / "loose.pdf"
+    loose.write_bytes(PDF)
+    blob = git(repo, "hash-object", "-w", str(loose)).strip()
+    git(repo, "tag", "loose-blob", blob)
+    with pytest.raises(ListingError, match="points at a blob"):
+        list_history(repo)
