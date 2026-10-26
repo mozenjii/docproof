@@ -48,10 +48,11 @@ def gates() -> list[Gate]:
     return [
         Gate("lockfile", (_uv_executable(), "lock", "--check")),
         Gate("provenance", (py, "-m", "docproof.provenance")),
+        Gate("provenance history", (py, "-m", "docproof.provenance", "--history")),
         Gate("format", (py, "-m", "ruff", "format", "--check", ".")),
         Gate("lint", (py, "-m", "ruff", "check", ".")),
         Gate("types", (py, "-m", "pyright")),
-        Gate("tests", (py, "-m", "pytest", "--cov", "--cov-report=term")),
+        Gate("tests", (py, "-m", "pytest", "-n", "auto", "--cov", "--cov-report=term")),
         Gate("dependency audit", (py, "-m", "pip_audit", "--skip-editable"), needs_network=True),
     ]
 
