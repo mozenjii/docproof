@@ -1,0 +1,1141 @@
+[
+  {
+    "id": "none-clean",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "none",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "abstained",
+      "reasons": []
+    },
+    "why": "8.4 rule 1"
+  },
+  {
+    "id": "none-everything-bad",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "none",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": true,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "abstained",
+      "reasons": []
+    },
+    "why": "8.4 rule 1 precedes all; no reasons"
+  },
+  {
+    "id": "none-optional",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "none",
+      "grounded": true,
+      "checks": [],
+      "confidence": null,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "abstained",
+      "reasons": []
+    },
+    "why": "8.4 rule 1"
+  },
+  {
+    "id": "conflicting-value-only-reason",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": true,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "conflicting_candidates"
+      ]
+    },
+    "why": "8.4 rule 2: exactly [conflicting_candidates]"
+  },
+  {
+    "id": "conflicting-clean-value",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": true,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "conflicting_candidates"
+      ]
+    },
+    "why": "8.4 rule 2"
+  },
+  {
+    "id": "conflicting-not-present",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": true,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "conflicting_candidates"
+      ]
+    },
+    "why": "8.4 rule 2 precedes rule 3"
+  },
+  {
+    "id": "conflicting-not-present-required",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": true,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "conflicting_candidates"
+      ]
+    },
+    "why": "8.4 rule 2 precedes rule 3"
+  },
+  {
+    "id": "np-required-high-conf",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 1.0,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "required_not_found"
+      ]
+    },
+    "why": "8.4 rule 3 required"
+  },
+  {
+    "id": "np-required-null-conf",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": null,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "required_not_found"
+      ]
+    },
+    "why": "8.4 rule 3: only required_not_found, no low_confidence"
+  },
+  {
+    "id": "np-required-bad-everything",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "not_present",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "required_not_found"
+      ]
+    },
+    "why": "8.4 rule 3: grounding, checks, flags not consulted"
+  },
+  {
+    "id": "np-optional-accept",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 3 optional, conf >= threshold"
+  },
+  {
+    "id": "np-optional-ignores-grounding-checks",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 3: grounding, checks and flags not consulted"
+  },
+  {
+    "id": "np-optional-grounded-null",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": null,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 3: grounding not consulted"
+  },
+  {
+    "id": "np-optional-at-threshold",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.9,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 3: >= threshold"
+  },
+  {
+    "id": "np-optional-below",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.89,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 rule 3: < threshold"
+  },
+  {
+    "id": "np-optional-null-conf",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": null,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 rule 3 / §3 fail-closed 1"
+  },
+  {
+    "id": "np-optional-low-and-bad",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 rule 3: only low_confidence"
+  },
+  {
+    "id": "value-clean",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4: no reasons"
+  },
+  {
+    "id": "value-optional-clean",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4 ignores required"
+  },
+  {
+    "id": "value-grounded-false",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": false,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ungrounded"
+      ]
+    },
+    "why": "8.4 rule 4: grounded not true"
+  },
+  {
+    "id": "value-grounded-null",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": null,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ungrounded"
+      ]
+    },
+    "why": "8.4 rule 4: null is not true"
+  },
+  {
+    "id": "value-check-pass",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "pass",
+          "advisory": false
+        },
+        {
+          "result": "pass",
+          "advisory": true
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4: passes add nothing"
+  },
+  {
+    "id": "value-fail-nonadvisory",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_failed"
+      ]
+    },
+    "why": "8.4 rule 4"
+  },
+  {
+    "id": "value-fail-advisory",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "pass",
+          "advisory": false
+        },
+        {
+          "result": "fail",
+          "advisory": true
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_failed"
+      ]
+    },
+    "why": "§3 rule 2: any fail, advisory or not"
+  },
+  {
+    "id": "value-two-fails-one-reason",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "fail",
+          "advisory": true
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_failed"
+      ]
+    },
+    "why": "8.4 rule 4: reason set, no duplicates"
+  },
+  {
+    "id": "value-unknown-nonadvisory",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_unknown"
+      ]
+    },
+    "why": "8.4 rule 4"
+  },
+  {
+    "id": "value-unknown-with-pass",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "pass",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_unknown"
+      ]
+    },
+    "why": "§3 rule 2: even when others pass"
+  },
+  {
+    "id": "value-unknown-advisory",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "unknown",
+          "advisory": true
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4: advisory unknown does not flag"
+  },
+  {
+    "id": "value-unknown-advisory-and-pass",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "unknown",
+          "advisory": true
+        },
+        {
+          "result": "pass",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4"
+  },
+  {
+    "id": "value-fail-and-unknown",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": true
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_failed",
+        "validator_unknown"
+      ]
+    },
+    "why": "8.4 rule 4: collect every reason"
+  },
+  {
+    "id": "value-fail-advisory-unknown-advisory",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": true
+        },
+        {
+          "result": "unknown",
+          "advisory": true
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "validator_failed"
+      ]
+    },
+    "why": "8.4 rule 4: advisory unknown adds nothing"
+  },
+  {
+    "id": "value-conf-null",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": null,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 rule 4 / §3 fail-closed 1"
+  },
+  {
+    "id": "value-conf-at-threshold",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.9,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 rule 4: low only if < threshold"
+  },
+  {
+    "id": "value-conf-just-below",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.8999,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 rule 4: < threshold"
+  },
+  {
+    "id": "value-threshold-zero-conf-zero",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.0,
+      "threshold": 0.0,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 0 >= 0; threshold 0 is in [0,1]"
+  },
+  {
+    "id": "value-threshold-one-conf-one",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 1.0,
+      "threshold": 1.0,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "accepted",
+      "reasons": []
+    },
+    "why": "8.4 1 >= 1; threshold 1 is in [0,1]"
+  },
+  {
+    "id": "value-threshold-one-conf-below",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.999,
+      "threshold": 1.0,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 < threshold"
+  },
+  {
+    "id": "value-threshold-zero-conf-null",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": null,
+      "threshold": 0.0,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence"
+      ]
+    },
+    "why": "8.4 null confidence flags even at threshold 0"
+  },
+  {
+    "id": "value-ambiguous",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ambiguous_rendering"
+      ]
+    },
+    "why": "8.4 rule 4"
+  },
+  {
+    "id": "value-out-of-vocab",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "out_of_vocabulary"
+      ]
+    },
+    "why": "8.4 rule 4"
+  },
+  {
+    "id": "value-ungrounded-and-low",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": false,
+      "checks": [],
+      "confidence": 0.5,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "low_confidence",
+        "ungrounded"
+      ]
+    },
+    "why": "8.4 rule 4: collect every reason, sorted"
+  },
+  {
+    "id": "value-all-six-reasons",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ambiguous_rendering",
+        "low_confidence",
+        "out_of_vocabulary",
+        "ungrounded",
+        "validator_failed",
+        "validator_unknown"
+      ]
+    },
+    "why": "8.4 rule 4: all reasons collected, sorted"
+  },
+  {
+    "id": "value-all-six-optional",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "value",
+      "grounded": false,
+      "checks": [
+        {
+          "result": "fail",
+          "advisory": false
+        },
+        {
+          "result": "unknown",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.1,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ambiguous_rendering",
+        "low_confidence",
+        "out_of_vocabulary",
+        "ungrounded",
+        "validator_failed",
+        "validator_unknown"
+      ]
+    },
+    "why": "8.4 rule 4 ignores required"
+  },
+  {
+    "id": "value-ambiguous-oov-only",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": true,
+      "conflicting": false,
+      "in_vocabulary": false
+    },
+    "expected": {
+      "status": "flagged",
+      "reasons": [
+        "ambiguous_rendering",
+        "out_of_vocabulary"
+      ]
+    },
+    "why": "8.4 rule 4: collect, sorted"
+  },
+  {
+    "id": "threshold-above-one",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 1.5,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected_error": "invalid_threshold",
+    "why": "8.4 threshold outside [0,1]"
+  },
+  {
+    "id": "threshold-negative",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": -0.1,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected_error": "invalid_threshold",
+    "why": "8.4 threshold outside [0,1]"
+  },
+  {
+    "id": "threshold-above-one-np",
+    "fn": "route",
+    "args": {
+      "required": false,
+      "proposal": "not_present",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 1.01,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "expected_error": "invalid_threshold",
+    "why": "8.4 threshold outside [0,1]"
+  }
+]

@@ -1,0 +1,735 @@
+[
+  {
+    "id": "text-collapse-and-strip-ws",
+    "fn": "normalize_text",
+    "args": {
+      "s": "  Hello   World  "
+    },
+    "expected": "hello world",
+    "why": "8.1 casefold; whitespace runs -> one space; strip ends"
+  },
+  {
+    "id": "text-tabs-newlines",
+    "fn": "normalize_text",
+    "args": {
+      "s": "Net\t\n 30\r\ndays"
+    },
+    "expected": "net 30 days",
+    "why": "8.1 every run of whitespace becomes one space"
+  },
+  {
+    "id": "text-trailing-period",
+    "fn": "normalize_text",
+    "args": {
+      "s": "Net 30."
+    },
+    "expected": "net 30",
+    "why": "8.1 strip trailing punctuation ."
+  },
+  {
+    "id": "text-nested-brackets-quotes",
+    "fn": "normalize_text",
+    "args": {
+      "s": "\"(Net 30 days)\""
+    },
+    "expected": "net 30 days",
+    "why": "8.1 strip \" ( ) repeatedly from both ends"
+  },
+  {
+    "id": "text-all-bracket-kinds",
+    "fn": "normalize_text",
+    "args": {
+      "s": "{[(x)]}"
+    },
+    "expected": "x",
+    "why": "8.1 strip ()[]{} repeatedly"
+  },
+  {
+    "id": "text-mixed-ws-and-punct-ends",
+    "fn": "normalize_text",
+    "args": {
+      "s": "  .  hello  .  "
+    },
+    "expected": "hello",
+    "why": "8.1 strip whitespace and punctuation from both ends repeatedly"
+  },
+  {
+    "id": "text-strip-dash-underscore-slash",
+    "fn": "normalize_text",
+    "args": {
+      "s": "--__//x//__--"
+    },
+    "expected": "x",
+    "why": "8.1 - _ / are in the strip set"
+  },
+  {
+    "id": "text-single-quotes",
+    "fn": "normalize_text",
+    "args": {
+      "s": "'quoted'"
+    },
+    "expected": "quoted",
+    "why": "8.1 ' in strip set"
+  },
+  {
+    "id": "text-internal-punct-kept",
+    "fn": "normalize_text",
+    "args": {
+      "s": "A.B-C"
+    },
+    "expected": "a.b-c",
+    "why": "8.1 only ends are stripped"
+  },
+  {
+    "id": "text-internal-comma-kept",
+    "fn": "normalize_text",
+    "args": {
+      "s": "Hello, World!"
+    },
+    "expected": "hello, world",
+    "why": "8.1 trailing ! stripped, internal , kept"
+  },
+  {
+    "id": "text-internal-spaced-dash",
+    "fn": "normalize_text",
+    "args": {
+      "s": "x  -  y"
+    },
+    "expected": "x - y",
+    "why": "8.1 internal whitespace collapsed, internal - kept"
+  },
+  {
+    "id": "text-only-punct",
+    "fn": "normalize_text",
+    "args": {
+      "s": "...!?"
+    },
+    "expected": "",
+    "why": "8.1 everything is strippable punctuation"
+  },
+  {
+    "id": "text-empty",
+    "fn": "normalize_text",
+    "args": {
+      "s": ""
+    },
+    "expected": "",
+    "why": "8.1 empty stays empty"
+  },
+  {
+    "id": "text-hash-not-stripped",
+    "fn": "normalize_text",
+    "args": {
+      "s": "#123"
+    },
+    "expected": "#123",
+    "why": "8.1 # is not in the strip set"
+  },
+  {
+    "id": "text-percent-not-stripped",
+    "fn": "normalize_text",
+    "args": {
+      "s": "50%"
+    },
+    "expected": "50%",
+    "why": "8.1 % is not in the strip set"
+  },
+  {
+    "id": "text-asterisk-not-stripped",
+    "fn": "normalize_text",
+    "args": {
+      "s": "*note*"
+    },
+    "expected": "*note*",
+    "why": "8.1 * is not in the strip set"
+  },
+  {
+    "id": "text-fullwidth-letters",
+    "fn": "normalize_text",
+    "args": {
+      "s": "ＡＢＣ"
+    },
+    "expected": "abc",
+    "why": "8.1 NFKC maps fullwidth, then casefold"
+  },
+  {
+    "id": "text-fullwidth-parens",
+    "fn": "normalize_text",
+    "args": {
+      "s": "（x）"
+    },
+    "expected": "x",
+    "why": "8.1 NFKC maps fullwidth parens to ( ) which are stripped"
+  },
+  {
+    "id": "text-ellipsis-char",
+    "fn": "normalize_text",
+    "args": {
+      "s": "wait…"
+    },
+    "expected": "wait",
+    "why": "8.1 NFKC maps U+2026 to ... which is stripped"
+  },
+  {
+    "id": "text-ligature",
+    "fn": "normalize_text",
+    "args": {
+      "s": "ﬁle"
+    },
+    "expected": "file",
+    "why": "8.1 NFKC decomposes the fi ligature"
+  },
+  {
+    "id": "text-roman-numeral",
+    "fn": "normalize_text",
+    "args": {
+      "s": "Ⅻ"
+    },
+    "expected": "xii",
+    "why": "8.1 NFKC maps U+216B to XII, casefold"
+  },
+  {
+    "id": "text-casefold-sharp-s",
+    "fn": "normalize_text",
+    "args": {
+      "s": "Straße"
+    },
+    "expected": "strasse",
+    "why": "8.1 casefold (not lower) maps ß to ss"
+  },
+  {
+    "id": "text-nbsp",
+    "fn": "normalize_text",
+    "args": {
+      "s": " Net  30 "
+    },
+    "expected": "net 30",
+    "why": "8.1 NFKC maps NBSP to space; collapse and strip"
+  },
+  {
+    "id": "text-ideographic-space",
+    "fn": "normalize_text",
+    "args": {
+      "s": "　x　y"
+    },
+    "expected": "x y",
+    "why": "8.1 NFKC maps U+3000 to space"
+  },
+  {
+    "id": "id-hyphen-slash",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "inv-2026/001"
+    },
+    "expected": "INV2026001",
+    "why": "8.1 uppercase; remove - and /"
+  },
+  {
+    "id": "id-all-removed-chars",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "A.B C-D/E"
+    },
+    "expected": "ABCDE",
+    "why": "8.1 remove spaces - . /"
+  },
+  {
+    "id": "id-no-o0-fold",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "INV-0O1I"
+    },
+    "expected": "INV0O1I",
+    "why": "8.1/4 O/0 and I/1 are NOT folded"
+  },
+  {
+    "id": "id-lowercase-o-l-kept",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "po-o0l1"
+    },
+    "expected": "POO0L1",
+    "why": "8.1 uppercase only; no O/0 or l/1 folding"
+  },
+  {
+    "id": "id-fullwidth",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "ｉｎｖ１２"
+    },
+    "expected": "INV12",
+    "why": "8.1 NFKC then uppercase"
+  },
+  {
+    "id": "id-fullwidth-hyphen-minus",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "A－1"
+    },
+    "expected": "A1",
+    "why": "8.1 NFKC maps U+FF0D to - which is removed"
+  },
+  {
+    "id": "id-fullwidth-solidus",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "A／1"
+    },
+    "expected": "A1",
+    "why": "8.1 NFKC maps U+FF0F to / which is removed"
+  },
+  {
+    "id": "id-numero-sign",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "№ 12"
+    },
+    "expected": "NO12",
+    "why": "8.1 NFKC maps № to No; uppercase; space removed"
+  },
+  {
+    "id": "id-surrounding-spaces",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "  12 34 "
+    },
+    "expected": "1234",
+    "why": "8.1 spaces removed everywhere"
+  },
+  {
+    "id": "id-underscore-kept",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "inv_001"
+    },
+    "expected": "INV_001",
+    "why": "8.1 underscore is not in the removal set"
+  },
+  {
+    "id": "id-hash-kept",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "#12"
+    },
+    "expected": "#12",
+    "why": "8.1 # is not in the removal set"
+  },
+  {
+    "id": "id-empty",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": ""
+    },
+    "expected": "",
+    "why": "8.1 empty stays empty"
+  },
+  {
+    "id": "id-only-separators",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": " -./ "
+    },
+    "expected": "",
+    "why": "8.1 every char removed"
+  },
+  {
+    "id": "money-pad-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "12.5",
+      "currency": "usd"
+    },
+    "expected": {
+      "amount": "12.50",
+      "currency": "USD"
+    },
+    "why": "8.1 currency uppercased; quantised to 2 decimals"
+  },
+  {
+    "id": "money-integer-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "12",
+      "currency": "USD"
+    },
+    "expected": {
+      "amount": "12.00",
+      "currency": "USD"
+    },
+    "why": "8.1 quantised to 2 decimals"
+  },
+  {
+    "id": "money-exact-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "12.50",
+      "currency": "USD"
+    },
+    "expected": {
+      "amount": "12.50",
+      "currency": "USD"
+    },
+    "why": "8.1 already at minor unit"
+  },
+  {
+    "id": "money-zero-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "0",
+      "currency": "USD"
+    },
+    "expected": {
+      "amount": "0.00",
+      "currency": "USD"
+    },
+    "why": "8.1 quantise zero"
+  },
+  {
+    "id": "money-negative-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "-12.5",
+      "currency": "USD"
+    },
+    "expected": {
+      "amount": "-12.50",
+      "currency": "USD"
+    },
+    "why": "8.1 well-formed negative decimal quantised (credit amounts)"
+  },
+  {
+    "id": "money-mixed-case-eur",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "0.1",
+      "currency": "Eur"
+    },
+    "expected": {
+      "amount": "0.10",
+      "currency": "EUR"
+    },
+    "why": "8.1 currency uppercased"
+  },
+  {
+    "id": "money-large-chf",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1234567.8",
+      "currency": "CHF"
+    },
+    "expected": {
+      "amount": "1234567.80",
+      "currency": "CHF"
+    },
+    "why": "8.1 no grouping, 2 decimals"
+  },
+  {
+    "id": "money-cad",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "CAD"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "CAD"
+    },
+    "why": "8.1 table: CAD 2"
+  },
+  {
+    "id": "money-aud",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "AUD"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "AUD"
+    },
+    "why": "8.1 table: AUD 2"
+  },
+  {
+    "id": "money-gbp",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "GBP"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "GBP"
+    },
+    "why": "8.1 table: GBP 2"
+  },
+  {
+    "id": "money-cny",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "CNY"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "CNY"
+    },
+    "why": "8.1 table: CNY 2"
+  },
+  {
+    "id": "money-inr",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "INR"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "INR"
+    },
+    "why": "8.1 table: INR 2"
+  },
+  {
+    "id": "money-pkr",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "PKR"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "PKR"
+    },
+    "why": "8.1 table: PKR 2"
+  },
+  {
+    "id": "money-mxn",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1",
+      "currency": "MXN"
+    },
+    "expected": {
+      "amount": "1.00",
+      "currency": "MXN"
+    },
+    "why": "8.1 table: MXN 2"
+  },
+  {
+    "id": "money-jpy-zero-decimals",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1500",
+      "currency": "jpy"
+    },
+    "expected": {
+      "amount": "1500",
+      "currency": "JPY"
+    },
+    "why": "8.1 table: JPY 0"
+  },
+  {
+    "id": "money-krw-zero-decimals",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1000",
+      "currency": "KRW"
+    },
+    "expected": {
+      "amount": "1000",
+      "currency": "KRW"
+    },
+    "why": "8.1 table: KRW 0"
+  },
+  {
+    "id": "money-bhd-three-decimals",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.5",
+      "currency": "BHD"
+    },
+    "expected": {
+      "amount": "1.500",
+      "currency": "BHD"
+    },
+    "why": "8.1 table: BHD 3"
+  },
+  {
+    "id": "money-kwd-zero-amount",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "0",
+      "currency": "kwd"
+    },
+    "expected": {
+      "amount": "0.000",
+      "currency": "KWD"
+    },
+    "why": "8.1 table: KWD 3"
+  },
+  {
+    "id": "money-omr-three-decimals",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "10.25",
+      "currency": "OMR"
+    },
+    "expected": {
+      "amount": "10.250",
+      "currency": "OMR"
+    },
+    "why": "8.1 table: OMR 3"
+  },
+  {
+    "id": "money-bhd-exact-three",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.234",
+      "currency": "BHD"
+    },
+    "expected": {
+      "amount": "1.234",
+      "currency": "BHD"
+    },
+    "why": "8.1 3 decimals is BHD's minor unit"
+  },
+  {
+    "id": "money-excess-usd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "12.505",
+      "currency": "USD"
+    },
+    "expected_error": "excess_precision",
+    "why": "8.1 more decimals than minor unit is an error, not rounded"
+  },
+  {
+    "id": "money-excess-not-half-even",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "2.345",
+      "currency": "USD"
+    },
+    "expected_error": "excess_precision",
+    "why": "8.1 must not round half-even to 2.34"
+  },
+  {
+    "id": "money-excess-jpy",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1500.5",
+      "currency": "JPY"
+    },
+    "expected_error": "excess_precision",
+    "why": "8.1 JPY has 0 decimals"
+  },
+  {
+    "id": "money-excess-jpy-half",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "2.5",
+      "currency": "JPY"
+    },
+    "expected_error": "excess_precision",
+    "why": "8.1 must not round 2.5 to 2"
+  },
+  {
+    "id": "money-excess-bhd",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.2345",
+      "currency": "BHD"
+    },
+    "expected_error": "excess_precision",
+    "why": "8.1 BHD has 3 decimals"
+  },
+  {
+    "id": "money-unknown-currency",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.00",
+      "currency": "XYZ"
+    },
+    "expected_error": "unknown_currency",
+    "why": "8.1 not in the minor-unit table"
+  },
+  {
+    "id": "money-real-but-untabled-currency",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.00",
+      "currency": "SEK"
+    },
+    "expected_error": "unknown_currency",
+    "why": "8.1 table is closed; SEK is absent"
+  },
+  {
+    "id": "money-empty-currency",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.00",
+      "currency": ""
+    },
+    "expected_error": "unknown_currency",
+    "why": "8.1 empty code is not in the table"
+  },
+  {
+    "id": "money-symbol-as-currency",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.00",
+      "currency": "$"
+    },
+    "expected_error": "unknown_currency",
+    "why": "8.1 a symbol is not a table code (§1: $ is ambiguous)"
+  },
+  {
+    "id": "money-letters",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "abc",
+      "currency": "USD"
+    },
+    "expected_error": "invalid_amount",
+    "why": "8.1 malformed amount"
+  },
+  {
+    "id": "money-empty-amount",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "",
+      "currency": "USD"
+    },
+    "expected_error": "invalid_amount",
+    "why": "8.1 malformed amount"
+  },
+  {
+    "id": "money-two-dots",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.2.3",
+      "currency": "USD"
+    },
+    "expected_error": "invalid_amount",
+    "why": "8.1 malformed amount"
+  },
+  {
+    "id": "money-nan",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "NaN",
+      "currency": "USD"
+    },
+    "expected_error": "invalid_amount",
+    "why": "8.1 NaN is not an amount (Decimal parses it; must still fail)"
+  },
+  {
+    "id": "money-infinity",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "Infinity",
+      "currency": "USD"
+    },
+    "expected_error": "invalid_amount",
+    "why": "8.1 Infinity is not an amount"
+  }
+]

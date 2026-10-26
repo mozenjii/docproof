@@ -1,0 +1,325 @@
+[
+  {
+    "id": "text-unicode-dash-strip",
+    "fn": "normalize_text",
+    "args": {
+      "s": "–Net 30–"
+    },
+    "question": "The strip set is ASCII .,;:!?\"'()[]{}-_/ and NFKC does not map an en dash (U+2013) or curly quotes to ASCII. Are '–Net 30–' and '“Net 30”' left with their dashes/quotes ('–net 30–'), or should Unicode punctuation be stripped too?"
+  },
+  {
+    "id": "id-unicode-dash",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "INV–2026"
+    },
+    "question": "normalize_identifier removes only ASCII '-'. NFKC does not map en dash U+2013 or hyphen U+2010. Does 'INV–2026' stay 'INV–2026' (and so mismatch 'INV-2026'), or are Unicode dashes removed?"
+  },
+  {
+    "id": "id-tab-whitespace",
+    "fn": "normalize_identifier",
+    "args": {
+      "s": "INV\t001"
+    },
+    "question": "'remove spaces': only U+0020, or all whitespace (tab, newline, NBSP after NFKC is a space)? Is 'INV\\t001' -> 'INV001' or 'INV\\t001'?"
+  },
+  {
+    "id": "money-trailing-zero-excess",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "12.500",
+      "currency": "USD"
+    },
+    "question": "'more decimals than the minor unit' -> excess_precision. Does that count printed decimals (12.500 has 3 -> error) or significant precision (12.500 == 12.50 exactly -> {12.50, USD})? Same for '1500.0' JPY."
+  },
+  {
+    "id": "money-amount-shapes",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1e2",
+      "currency": "USD"
+    },
+    "question": "Which amount strings are well-formed? Exponent '1e2', '.5', '5.', '+12.5', ' 12.50 ' (whitespace) and grouped '1,234.56' are all unspecified: amount or invalid_amount?"
+  },
+  {
+    "id": "money-error-precedence",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "abc",
+      "currency": "XYZ"
+    },
+    "question": "When both amount and currency are bad (or excess precision with an unknown currency, e.g. '1.005','XYZ'), which error code wins?"
+  },
+  {
+    "id": "money-currency-whitespace",
+    "fn": "normalize_money",
+    "args": {
+      "amount": "1.00",
+      "currency": " usd "
+    },
+    "question": "Is the currency code trimmed before lookup, or is ' usd ' unknown_currency?"
+  },
+  {
+    "id": "date-month-name-variants",
+    "fn": "parse_date",
+    "args": {
+      "text": "April 3 2026",
+      "day_first": null
+    },
+    "question": "Are the five month-name examples the exhaustive set of shapes? Unclear: 'April 3 2026' (full name, no comma), 'Apr 3, 2026', '3-Apr-2026' (1-digit day with dashes), '03-April-2026', '3 April, 2026', 'Apr. 3, 2026', '3rd April 2026', '3  April 2026' (double space)."
+  },
+  {
+    "id": "date-name-one-digit-dash",
+    "fn": "parse_date",
+    "args": {
+      "text": "3-Apr-2026",
+      "day_first": null
+    },
+    "question": "Shape is listed only as '03-Apr-2026'. Is a 1-digit day accepted in the dashed month-name shape?"
+  },
+  {
+    "id": "amt-space-after-symbol",
+    "fn": "parse_amount",
+    "args": {
+      "text": "$ 12.50",
+      "decimal_comma": null
+    },
+    "question": "Symbols and surrounding whitespace are stripped 'first' but the order is not given. Is whitespace between the symbol and the number ('$ 12.50', '€ 1.234,56') stripped -> 12.50, or invalid?"
+  },
+  {
+    "id": "amt-minus-before-symbol",
+    "fn": "parse_amount",
+    "args": {
+      "text": "-$12.50",
+      "decimal_comma": null
+    },
+    "question": "The symbol is stripped 'first', but it is not leading in '-$12.50'. Is this -12.50 or invalid? Likewise '($12.50)' and '(USD 12.50)'."
+  },
+  {
+    "id": "amt-missing-integer-or-fraction",
+    "fn": "parse_amount",
+    "args": {
+      "text": ".50",
+      "decimal_comma": null
+    },
+    "question": "A single separator with 0 digits after ('5.', '5,') or with no leading digits ('.50', ',5') is not covered by the 1/2/3/>=4 rules. amount or invalid? If amount, what is 'value' for '.50' ('.50' or '0.50')?"
+  },
+  {
+    "id": "amt-leading-group-4-digits",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1234,567",
+      "decimal_comma": null
+    },
+    "question": "Single separator, 3 digits after: the rule says ambiguous. But the grouping reading has a 4-digit leading group. Ambiguous ['1234.567','1234567'], or is the grouping reading excluded so it resolves to 1234.567? Same for '1234,567.89' with both separators: valid grouping or invalid?"
+  },
+  {
+    "id": "amt-space-grouping",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1 234,56",
+      "decimal_comma": null
+    },
+    "question": "Space (or NBSP / thin space / apostrophe '1'234.56') thousands grouping is common in EU/CH invoices. Invalid, or grouping?"
+  },
+  {
+    "id": "amt-plus-sign-and-lowercase-code",
+    "fn": "parse_amount",
+    "args": {
+      "text": "+12.50",
+      "decimal_comma": null
+    },
+    "question": "Is a leading '+' a sign or invalid? Is a lowercase or unspaced code ('12.50 usd', '12.50USD', 'USD12.50') stripped?"
+  },
+  {
+    "id": "amt-leading-zeros",
+    "fn": "parse_amount",
+    "args": {
+      "text": "007.50",
+      "decimal_comma": null
+    },
+    "question": "'as printed': does value keep leading zeros ('007.50') and negative zero ('-0.00')?"
+  },
+  {
+    "id": "v1-null-vs-mixed-currency",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        null,
+        {
+          "amount": "5.00",
+          "currency": "EUR"
+        }
+      ],
+      "subtotal": {
+        "amount": "15.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "question": "A call with both a null input (-> unknown) and mixed currencies (-> fail): which wins? Same question for v5 with ['USD', [EUR amount, null]] and v3 with a null plus a currency mismatch."
+  },
+  {
+    "id": "v1-error-vs-unknown",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [],
+      "subtotal": null,
+      "tol": -1
+    },
+    "question": "Is invalid_tolerance raised before null/empty checks (argument error first), or does a null input return unknown without validating tol?"
+  },
+  {
+    "id": "validator-money-unknown-currency",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "XYZ"
+        }
+      ],
+      "subtotal": {
+        "amount": "10.00",
+        "currency": "XYZ"
+      },
+      "tol": 1
+    },
+    "question": "tol is in minor units of the currency; a Money with a currency outside the minor-unit table has no minor unit. Error unknown_currency, fail, or unknown? Also: Money with excess precision ('10.005' USD) inside a validator."
+  },
+  {
+    "id": "v2-malformed-quantity",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "abc",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.50",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "question": "No error code is defined for a malformed quantity string in v2 (or malformed v8 value). Error (which code), fail, or unknown?"
+  },
+  {
+    "id": "v4-invalid-iso",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-02-30",
+      "later": "2026-03-01"
+    },
+    "question": "An impossible or malformed ISO string has no defined handling. Error (which code), fail, or unknown?"
+  },
+  {
+    "id": "v5-currency-case",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "usd",
+      "amounts": [
+        {
+          "amount": "1.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    "question": "V5 is 'exact'. Is document_currency compared case-sensitively ('usd' vs 'USD' -> fail) or uppercased first as §1 code normalisation suggests?"
+  },
+  {
+    "id": "nmfc-printed-variants",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "77.50"
+    },
+    "question": "'value as printed, compared before identifier normalisation': string or numeric comparison? Are '77.50', '100.0', '050' and ' 77.5 ' (surrounding whitespace) members? The 18 classes are not enumerated in the contract; assumed 50,55,60,65,70,77.5,85,92.5,100,110,125,150,175,200,250,300,400,500."
+  },
+  {
+    "id": "v7-equipment-kind",
+    "fn": "v7_format",
+    "args": {
+      "kind": "equipment",
+      "value": "VAN"
+    },
+    "question": "'equipment' is a §7 V7 kind deferred to OPEN-5. Until then is it unknown_format, unknown, or something else? Also: is kind case-sensitive ('IBAN')? And for an unknown kind with a null value: unknown_format or unknown?"
+  },
+  {
+    "id": "mc-non-ascii-digits",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "١٢٣"
+    },
+    "question": "'digits': ASCII 0-9 only, or any Unicode decimal digit (Arabic-Indic digits survive NFKC unchanged)? Same for IBAN's 'digits' and 'alphanumerics'."
+  },
+  {
+    "id": "v8-unit-set-and-case",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "10",
+        "unit": "kg"
+      }
+    },
+    "question": "The unit set is written 'EA, LB, KG, PCS, PLT, ...' - the members after the ellipsis are not listed (TON? CWT? CTN? SKID?). Is the unit compared case-insensitively ('kg') and trimmed?"
+  },
+  {
+    "id": "route-threshold-vs-none",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "none",
+      "grounded": true,
+      "checks": [],
+      "confidence": 0.95,
+      "threshold": 2.0,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "question": "Rules apply 'in this order', and rule 1 returns abstained for 'none'. Is invalid_threshold still raised when proposal is 'none' (or when conflicting is true), i.e. is threshold validated before the rules?"
+  },
+  {
+    "id": "route-confidence-out-of-range",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [],
+      "confidence": 1.2,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "question": "confidence is 'a float in [0,1] or null' but no error code is given for 1.2 or -0.1. Error (invalid_threshold? a new code?) or treated as-is?"
+  },
+  {
+    "id": "route-bad-check-or-proposal",
+    "fn": "route",
+    "args": {
+      "required": true,
+      "proposal": "value",
+      "grounded": true,
+      "checks": [
+        {
+          "result": "maybe",
+          "advisory": false
+        }
+      ],
+      "confidence": 0.95,
+      "threshold": 0.9,
+      "ambiguous": false,
+      "conflicting": false,
+      "in_vocabulary": true
+    },
+    "question": "A check result outside pass/fail/unknown, or a proposal outside value/not_present/none, has no error code in 8.4 (§3 rule 4 only says 'raises'). Which error code should the oracle expect?"
+  }
+]

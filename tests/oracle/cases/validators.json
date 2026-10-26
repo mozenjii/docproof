@@ -1,0 +1,2317 @@
+[
+  {
+    "id": "v1-exact-pass",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 sum equals subtotal"
+  },
+  {
+    "id": "v1-float-trap",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "0.10",
+          "currency": "USD"
+        },
+        {
+          "amount": "0.20",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "0.30",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 Decimal arithmetic: 0.10+0.20 = 0.30 exactly"
+  },
+  {
+    "id": "v1-single-line",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "99.99",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "99.99",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 one line"
+  },
+  {
+    "id": "v1-one-over-tol0",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.01",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 off by 1 minor unit > 0"
+  },
+  {
+    "id": "v1-at-limit-over",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.01",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 |diff| = 1 <= tol 1"
+  },
+  {
+    "id": "v1-at-limit-under",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "29.99",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 absolute difference"
+  },
+  {
+    "id": "v1-past-limit",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.02",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 |diff| = 2 > tol 1"
+  },
+  {
+    "id": "v1-past-limit-under",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "29.98",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 |diff| = 2 > tol 1"
+  },
+  {
+    "id": "v1-tol100-at-limit",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "11.00",
+        "currency": "USD"
+      },
+      "tol": 100
+    },
+    "expected": "pass",
+    "why": "8.3 tol 100 USD minor units = 1.00"
+  },
+  {
+    "id": "v1-tol100-past",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "11.01",
+        "currency": "USD"
+      },
+      "tol": 100
+    },
+    "expected": "fail",
+    "why": "8.3 101 minor units > 100"
+  },
+  {
+    "id": "v1-unpadded-amounts",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.5",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.50",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 compared as decimal values"
+  },
+  {
+    "id": "v1-credit-line",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "100.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "-20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "80.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 negative lines sum normally"
+  },
+  {
+    "id": "v1-jpy-tol1-pass",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "1000",
+          "currency": "JPY"
+        },
+        {
+          "amount": "500",
+          "currency": "JPY"
+        }
+      ],
+      "subtotal": {
+        "amount": "1501",
+        "currency": "JPY"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 JPY minor unit is 1 yen"
+  },
+  {
+    "id": "v1-jpy-tol1-fail",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "1000",
+          "currency": "JPY"
+        },
+        {
+          "amount": "500",
+          "currency": "JPY"
+        }
+      ],
+      "subtotal": {
+        "amount": "1502",
+        "currency": "JPY"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 2 yen > 1"
+  },
+  {
+    "id": "v1-bhd-tol1-pass",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "1.250",
+          "currency": "BHD"
+        },
+        {
+          "amount": "2.250",
+          "currency": "BHD"
+        }
+      ],
+      "subtotal": {
+        "amount": "3.501",
+        "currency": "BHD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 BHD minor unit 0.001"
+  },
+  {
+    "id": "v1-bhd-tol1-fail",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "1.250",
+          "currency": "BHD"
+        },
+        {
+          "amount": "2.250",
+          "currency": "BHD"
+        }
+      ],
+      "subtotal": {
+        "amount": "3.510",
+        "currency": "BHD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 0.010 BHD = 10 minor units > 1 (tol is not 0.01)"
+  },
+  {
+    "id": "v1-empty-lines",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [],
+      "subtotal": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 empty line_amounts -> unknown"
+  },
+  {
+    "id": "v1-null-line",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        null
+      ],
+      "subtotal": {
+        "amount": "10.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input a rule needs -> unknown (not skipped)"
+  },
+  {
+    "id": "v1-null-subtotal",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": null,
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null subtotal -> unknown"
+  },
+  {
+    "id": "v1-mixed-line-currencies",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "EUR"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 different currencies in one call -> fail"
+  },
+  {
+    "id": "v1-subtotal-other-currency",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        {
+          "amount": "20.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "30.00",
+        "currency": "EUR"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 different currencies -> fail even though numbers match"
+  },
+  {
+    "id": "v1-negative-tol",
+    "fn": "v1_line_sum",
+    "args": {
+      "line_amounts": [
+        {
+          "amount": "10.00",
+          "currency": "USD"
+        }
+      ],
+      "subtotal": {
+        "amount": "10.00",
+        "currency": "USD"
+      },
+      "tol": -1
+    },
+    "expected_error": "invalid_tolerance",
+    "why": "8.3 negative tol"
+  },
+  {
+    "id": "v2-exact-pass",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.50",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 3 x 2.50 = 7.50"
+  },
+  {
+    "id": "v2-one-off-tol0",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.51",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 diff 1 minor unit > 0"
+  },
+  {
+    "id": "v2-one-off-tol1",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.51",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 diff 1 <= 1"
+  },
+  {
+    "id": "v2-two-off-tol1",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.52",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 diff 2 > 1"
+  },
+  {
+    "id": "v2-half-cent-tol0-up",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "1.5",
+      "unit_price": {
+        "amount": "3.33",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "5.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 exact product 4.995; diff 0.5 minor unit > 0 (no rounding of the product)"
+  },
+  {
+    "id": "v2-half-cent-tol0-down",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "1.5",
+      "unit_price": {
+        "amount": "3.33",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "4.99",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 diff 0.005 > 0"
+  },
+  {
+    "id": "v2-half-cent-tol1",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "1.5",
+      "unit_price": {
+        "amount": "3.33",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "5.00",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 diff 0.5 minor unit <= 1"
+  },
+  {
+    "id": "v2-sub-cent-tol0",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "0.333",
+      "unit_price": {
+        "amount": "3.00",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "1.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 0.999 vs 1.00: 0.1 minor unit > 0"
+  },
+  {
+    "id": "v2-sub-cent-tol1",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "0.333",
+      "unit_price": {
+        "amount": "3.00",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "1.00",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 0.1 minor unit <= 1"
+  },
+  {
+    "id": "v2-zero-qty",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "0",
+      "unit_price": {
+        "amount": "5.00",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 0 x 5 = 0"
+  },
+  {
+    "id": "v2-negative-qty",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "-2",
+      "unit_price": {
+        "amount": "5.00",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "-10.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 arithmetic holds for credits"
+  },
+  {
+    "id": "v2-jpy-tol1",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "333",
+        "currency": "JPY"
+      },
+      "amount": {
+        "amount": "1000",
+        "currency": "JPY"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 999 vs 1000: 1 yen <= 1"
+  },
+  {
+    "id": "v2-jpy-tol0",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "333",
+        "currency": "JPY"
+      },
+      "amount": {
+        "amount": "1000",
+        "currency": "JPY"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 1 yen > 0"
+  },
+  {
+    "id": "v2-kwd-pass",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "2",
+      "unit_price": {
+        "amount": "1.125",
+        "currency": "KWD"
+      },
+      "amount": {
+        "amount": "2.250",
+        "currency": "KWD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 3-decimal currency"
+  },
+  {
+    "id": "v2-kwd-one-fils",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "2",
+      "unit_price": {
+        "amount": "1.125",
+        "currency": "KWD"
+      },
+      "amount": {
+        "amount": "2.251",
+        "currency": "KWD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 0.001 KWD = 1 minor unit > 0"
+  },
+  {
+    "id": "v2-mixed-currency",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "2",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "5.00",
+        "currency": "EUR"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 different currencies -> fail"
+  },
+  {
+    "id": "v2-null-qty",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": null,
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.50",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v2-null-price",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": null,
+      "amount": {
+        "amount": "7.50",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v2-null-amount",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": null,
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v2-negative-tol",
+    "fn": "v2_line_arith",
+    "args": {
+      "quantity": "3",
+      "unit_price": {
+        "amount": "2.50",
+        "currency": "USD"
+      },
+      "amount": {
+        "amount": "7.50",
+        "currency": "USD"
+      },
+      "tol": -1
+    },
+    "expected_error": "invalid_tolerance",
+    "why": "8.3 negative tol"
+  },
+  {
+    "id": "v3-exact-pass",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.25",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 100.00 + 8.25 = 108.25"
+  },
+  {
+    "id": "v3-one-off-tol0",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.26",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 diff 1 > 0"
+  },
+  {
+    "id": "v3-one-off-tol1",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.26",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 diff 1 <= 1"
+  },
+  {
+    "id": "v3-two-off-tol1",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.27",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 diff 2 > 1"
+  },
+  {
+    "id": "v3-under-tol1",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.24",
+        "currency": "USD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 absolute difference"
+  },
+  {
+    "id": "v3-zero-tax",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "50.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "50.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 zero tax is a value, not null"
+  },
+  {
+    "id": "v3-credit-note",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "-100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "-8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "-108.25",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 negatives sum normally"
+  },
+  {
+    "id": "v3-jpy",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "1000",
+        "currency": "JPY"
+      },
+      "tax_total": {
+        "amount": "100",
+        "currency": "JPY"
+      },
+      "total": {
+        "amount": "1100",
+        "currency": "JPY"
+      },
+      "tol": 0
+    },
+    "expected": "pass",
+    "why": "8.3 0-decimal currency"
+  },
+  {
+    "id": "v3-bhd-tol1-pass",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "10.000",
+        "currency": "BHD"
+      },
+      "tax_total": {
+        "amount": "0.500",
+        "currency": "BHD"
+      },
+      "total": {
+        "amount": "10.501",
+        "currency": "BHD"
+      },
+      "tol": 1
+    },
+    "expected": "pass",
+    "why": "8.3 1 fils <= 1"
+  },
+  {
+    "id": "v3-bhd-tol1-fail",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "10.000",
+        "currency": "BHD"
+      },
+      "tax_total": {
+        "amount": "0.500",
+        "currency": "BHD"
+      },
+      "total": {
+        "amount": "10.502",
+        "currency": "BHD"
+      },
+      "tol": 1
+    },
+    "expected": "fail",
+    "why": "8.3 2 fils > 1"
+  },
+  {
+    "id": "v3-null-tax",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": null,
+      "total": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown (null tax is not zero)"
+  },
+  {
+    "id": "v3-null-subtotal",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": null,
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.25",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v3-null-total",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": null,
+      "tol": 0
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v3-mixed-currency",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "EUR"
+      },
+      "total": {
+        "amount": "108.25",
+        "currency": "USD"
+      },
+      "tol": 0
+    },
+    "expected": "fail",
+    "why": "8.3 different currencies -> fail"
+  },
+  {
+    "id": "v3-negative-tol",
+    "fn": "v3_total_arith",
+    "args": {
+      "subtotal": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "tax_total": {
+        "amount": "8.25",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "108.25",
+        "currency": "USD"
+      },
+      "tol": -1
+    },
+    "expected_error": "invalid_tolerance",
+    "why": "8.3 negative tol"
+  },
+  {
+    "id": "v4-later-pass",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-04-01",
+      "later": "2026-04-30"
+    },
+    "expected": "pass",
+    "why": "8.3 later >= earlier"
+  },
+  {
+    "id": "v4-same-day",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-04-30",
+      "later": "2026-04-30"
+    },
+    "expected": "pass",
+    "why": "8.3 same day passes"
+  },
+  {
+    "id": "v4-one-day-before",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-04-30",
+      "later": "2026-04-29"
+    },
+    "expected": "fail",
+    "why": "8.3 later < earlier"
+  },
+  {
+    "id": "v4-year-boundary",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2025-12-31",
+      "later": "2026-01-01"
+    },
+    "expected": "pass",
+    "why": "8.3 across year end"
+  },
+  {
+    "id": "v4-year-boundary-reversed",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-01-01",
+      "later": "2025-12-31"
+    },
+    "expected": "fail",
+    "why": "8.3 later < earlier"
+  },
+  {
+    "id": "v4-leap-day",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2024-02-29",
+      "later": "2024-03-01"
+    },
+    "expected": "pass",
+    "why": "8.3 leap day"
+  },
+  {
+    "id": "v4-null-earlier",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": null,
+      "later": "2026-04-30"
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v4-null-later",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": "2026-04-01",
+      "later": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v4-both-null",
+    "fn": "v4_date_order",
+    "args": {
+      "earlier": null,
+      "later": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "v5-all-match",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "USD",
+      "amounts": [
+        {
+          "amount": "12.50",
+          "currency": "USD"
+        },
+        {
+          "amount": "3",
+          "currency": "USD"
+        }
+      ]
+    },
+    "expected": "pass",
+    "why": "8.3 every amount has document currency"
+  },
+  {
+    "id": "v5-single",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "EUR",
+      "amounts": [
+        {
+          "amount": "1.00",
+          "currency": "EUR"
+        }
+      ]
+    },
+    "expected": "pass",
+    "why": "8.3 one amount matches"
+  },
+  {
+    "id": "v5-one-mismatch",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "USD",
+      "amounts": [
+        {
+          "amount": "12.50",
+          "currency": "USD"
+        },
+        {
+          "amount": "3.00",
+          "currency": "EUR"
+        }
+      ]
+    },
+    "expected": "fail",
+    "why": "8.3 an amount in another currency"
+  },
+  {
+    "id": "v5-all-mismatch",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "USD",
+      "amounts": [
+        {
+          "amount": "12.50",
+          "currency": "CAD"
+        }
+      ]
+    },
+    "expected": "fail",
+    "why": "8.3 another currency"
+  },
+  {
+    "id": "v5-empty",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "USD",
+      "amounts": []
+    },
+    "expected": "unknown",
+    "why": "8.3 empty list -> unknown"
+  },
+  {
+    "id": "v5-null-doc-currency",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": null,
+      "amounts": [
+        {
+          "amount": "12.50",
+          "currency": "USD"
+        }
+      ]
+    },
+    "expected": "unknown",
+    "why": "8.3 null currency -> unknown"
+  },
+  {
+    "id": "v5-null-amount",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": "USD",
+      "amounts": [
+        {
+          "amount": "12.50",
+          "currency": "USD"
+        },
+        null
+      ]
+    },
+    "expected": "unknown",
+    "why": "8.3 any null amount -> unknown even when the rest match"
+  },
+  {
+    "id": "v5-null-and-empty",
+    "fn": "v5_currency",
+    "args": {
+      "document_currency": null,
+      "amounts": []
+    },
+    "expected": "unknown",
+    "why": "8.3 null currency and empty list"
+  },
+  {
+    "id": "iban-gb-valid",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82WEST12345698765432"
+    },
+    "expected": "pass",
+    "why": "8.3 mod-97 = 1 (verified)"
+  },
+  {
+    "id": "iban-de-valid",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "DE89370400440532013000"
+    },
+    "expected": "pass",
+    "why": "8.3 mod-97 = 1 (verified)"
+  },
+  {
+    "id": "iban-fr-valid-letter-in-bban",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "FR1420041010050500013M02606"
+    },
+    "expected": "pass",
+    "why": "8.3 alphanumeric BBAN, mod-97 = 1"
+  },
+  {
+    "id": "iban-nl-valid",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "NL91ABNA0417164300"
+    },
+    "expected": "pass",
+    "why": "8.3 mod-97 = 1"
+  },
+  {
+    "id": "iban-no-15-chars",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "NO9386011117947"
+    },
+    "expected": "pass",
+    "why": "8.3 15 chars is the minimum; mod-97 = 1"
+  },
+  {
+    "id": "iban-spaced-print-form",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82 WEST 1234 5698 7654 32"
+    },
+    "expected": "pass",
+    "why": "8.3 normalize_identifier removes spaces first"
+  },
+  {
+    "id": "iban-lowercase",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "gb82west12345698765432"
+    },
+    "expected": "pass",
+    "why": "8.3 normalize_identifier uppercases first"
+  },
+  {
+    "id": "iban-hyphenated",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "DE89-3704-0044-0532-0130-00"
+    },
+    "expected": "pass",
+    "why": "8.3 hyphens removed first"
+  },
+  {
+    "id": "iban-gb-wrong-national-length",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB93ABCD12345678"
+    },
+    "expected": "pass",
+    "why": "8.3 contract checks 15-34 and mod-97 only, no per-country length; mod-97 = 1"
+  },
+  {
+    "id": "iban-unassigned-country",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "ZZ62ABCDEFGHIJK"
+    },
+    "expected": "pass",
+    "why": "8.3 contract requires 2 letters, not a real country; mod-97 = 1"
+  },
+  {
+    "id": "iban-34-chars-valid",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB66A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1"
+    },
+    "expected": "pass",
+    "why": "8.3 34 chars is the maximum; mod-97 = 1"
+  },
+  {
+    "id": "iban-35-chars-mod-ok",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB83A1A1A1A1A1A1A1A1A1A1A1A1A1A1A11"
+    },
+    "expected": "fail",
+    "why": "8.3 35 chars > 34 even though mod-97 = 1"
+  },
+  {
+    "id": "iban-14-chars-mod-ok",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB681111111111"
+    },
+    "expected": "fail",
+    "why": "8.3 14 chars < 15 even though mod-97 = 1"
+  },
+  {
+    "id": "iban-15-chars-constructed",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB0611111111111"
+    },
+    "expected": "pass",
+    "why": "8.3 15 chars, mod-97 = 1"
+  },
+  {
+    "id": "iban-last-digit-changed",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82WEST12345698765433"
+    },
+    "expected": "fail",
+    "why": "8.3 mod-97 = 28"
+  },
+  {
+    "id": "iban-check-digits-changed",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB83WEST12345698765432"
+    },
+    "expected": "fail",
+    "why": "8.3 mod-97 = 2"
+  },
+  {
+    "id": "iban-de-digit-changed",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "DE89370400440532013001"
+    },
+    "expected": "fail",
+    "why": "8.3 mod-97 = 28"
+  },
+  {
+    "id": "iban-ocr-i-for-1",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82WESTI2345698765432"
+    },
+    "expected": "fail",
+    "why": "8.3/4 I is not folded to 1; mod-97 = 80"
+  },
+  {
+    "id": "iban-too-short",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82WEST"
+    },
+    "expected": "fail",
+    "why": "8.3 < 15 chars"
+  },
+  {
+    "id": "iban-digit-country",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "1282WEST12345698765432"
+    },
+    "expected": "fail",
+    "why": "8.3 must start with 2 letters"
+  },
+  {
+    "id": "iban-letter-check-digit",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GBX2WEST12345698765432"
+    },
+    "expected": "fail",
+    "why": "8.3 chars 3-4 must be digits"
+  },
+  {
+    "id": "iban-non-alnum",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": "GB82WEST1234569876543#"
+    },
+    "expected": "fail",
+    "why": "8.3 rest must be alphanumeric"
+  },
+  {
+    "id": "iban-empty",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": ""
+    },
+    "expected": "fail",
+    "why": "8.3 present but wrong shape"
+  },
+  {
+    "id": "iban-null",
+    "fn": "v7_format",
+    "args": {
+      "kind": "iban",
+      "value": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null input -> unknown"
+  },
+  {
+    "id": "scac-4",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "ABCD"
+    },
+    "expected": "pass",
+    "why": "8.3 2-4 letters"
+  },
+  {
+    "id": "scac-2",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "AB"
+    },
+    "expected": "pass",
+    "why": "8.3 2 letters is the minimum"
+  },
+  {
+    "id": "scac-3",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "UPS"
+    },
+    "expected": "pass",
+    "why": "8.3 3 letters"
+  },
+  {
+    "id": "scac-1",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "A"
+    },
+    "expected": "fail",
+    "why": "8.3 below 2"
+  },
+  {
+    "id": "scac-5",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "ABCDE"
+    },
+    "expected": "fail",
+    "why": "8.3 above 4"
+  },
+  {
+    "id": "scac-digit",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "AB1D"
+    },
+    "expected": "fail",
+    "why": "8.3 letters only"
+  },
+  {
+    "id": "scac-lowercase",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "abcd"
+    },
+    "expected": "pass",
+    "why": "8.3 normalised (uppercased) first"
+  },
+  {
+    "id": "scac-hyphenated",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "AB-CD"
+    },
+    "expected": "pass",
+    "why": "8.3 normalised to ABCD first"
+  },
+  {
+    "id": "scac-fullwidth",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "ＡＢＣＤ"
+    },
+    "expected": "pass",
+    "why": "8.3 NFKC to ABCD first"
+  },
+  {
+    "id": "scac-non-ascii-letter",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "ÄBC"
+    },
+    "expected": "fail",
+    "why": "8.3 A-Z only; Ä is a letter but not A-Z"
+  },
+  {
+    "id": "scac-hyphen-makes-5",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": "AB-CDE"
+    },
+    "expected": "fail",
+    "why": "8.3 normalised ABCDE is 5 letters"
+  },
+  {
+    "id": "scac-empty",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": ""
+    },
+    "expected": "fail",
+    "why": "8.3 0 letters"
+  },
+  {
+    "id": "scac-null",
+    "fn": "v7_format",
+    "args": {
+      "kind": "scac",
+      "value": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null -> unknown"
+  },
+  {
+    "id": "mc-digits",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "123456"
+    },
+    "expected": "pass",
+    "why": "8.3 1-8 digits"
+  },
+  {
+    "id": "mc-prefixed",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC123456"
+    },
+    "expected": "pass",
+    "why": "8.3 optional MC prefix"
+  },
+  {
+    "id": "mc-prefixed-hyphen",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC-123456"
+    },
+    "expected": "pass",
+    "why": "8.3 normalised to MC123456"
+  },
+  {
+    "id": "mc-lower-spaced",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "mc 123456"
+    },
+    "expected": "pass",
+    "why": "8.3 normalised to MC123456"
+  },
+  {
+    "id": "mc-one-digit",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "1"
+    },
+    "expected": "pass",
+    "why": "8.3 1 digit minimum"
+  },
+  {
+    "id": "mc-eight-digits",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "12345678"
+    },
+    "expected": "pass",
+    "why": "8.3 8 digits maximum"
+  },
+  {
+    "id": "mc-prefixed-eight",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC12345678"
+    },
+    "expected": "pass",
+    "why": "8.3 prefix plus 8 digits"
+  },
+  {
+    "id": "mc-nine-digits",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "123456789"
+    },
+    "expected": "fail",
+    "why": "8.3 above 8 digits"
+  },
+  {
+    "id": "mc-prefixed-nine",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC123456789"
+    },
+    "expected": "fail",
+    "why": "8.3 above 8 digits"
+  },
+  {
+    "id": "mc-prefix-only",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC"
+    },
+    "expected": "fail",
+    "why": "8.3 needs at least 1 digit"
+  },
+  {
+    "id": "mc-letter-inside",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MC12A4"
+    },
+    "expected": "fail",
+    "why": "8.3 digits only after prefix"
+  },
+  {
+    "id": "mc-other-prefix",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MX123"
+    },
+    "expected": "fail",
+    "why": "8.3 only MC prefix"
+  },
+  {
+    "id": "mc-double-prefix",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "MCMC123"
+    },
+    "expected": "fail",
+    "why": "8.3 prefix is optional and single"
+  },
+  {
+    "id": "mc-dot-prefix",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "DOT123"
+    },
+    "expected": "fail",
+    "why": "8.3 only MC prefix"
+  },
+  {
+    "id": "mc-fullwidth-digits",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": "１２３"
+    },
+    "expected": "pass",
+    "why": "8.3 NFKC maps fullwidth digits"
+  },
+  {
+    "id": "mc-empty",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": ""
+    },
+    "expected": "fail",
+    "why": "8.3 needs at least 1 digit"
+  },
+  {
+    "id": "mc-null",
+    "fn": "v7_format",
+    "args": {
+      "kind": "mc",
+      "value": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null -> unknown"
+  },
+  {
+    "id": "nmfc-member-50",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "50"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-55",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "55"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-60",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "60"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-65",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "65"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-70",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "70"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-77-5",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "77.5"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-85",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "85"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-92-5",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "92.5"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-100",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "100"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-110",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "110"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-125",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "125"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-150",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "150"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-175",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "175"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-200",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "200"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-250",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "250"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-300",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "300"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-400",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "400"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-member-500",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "500"
+    },
+    "expected": "pass",
+    "why": "8.3 one of the 18 NMFC classes (50..500), as printed"
+  },
+  {
+    "id": "nmfc-775-not-member",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "775"
+    },
+    "expected": "fail",
+    "why": "8.3 775 is not a class (identifier normalisation of 77.5 must not be applied)"
+  },
+  {
+    "id": "nmfc-77",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "77"
+    },
+    "expected": "fail",
+    "why": "8.3 not a class"
+  },
+  {
+    "id": "nmfc-45",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "45"
+    },
+    "expected": "fail",
+    "why": "8.3 below the set"
+  },
+  {
+    "id": "nmfc-600",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "600"
+    },
+    "expected": "fail",
+    "why": "8.3 above the set"
+  },
+  {
+    "id": "nmfc-75",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "75"
+    },
+    "expected": "fail",
+    "why": "8.3 not a class"
+  },
+  {
+    "id": "nmfc-text",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": "class 70"
+    },
+    "expected": "fail",
+    "why": "8.3 not a member as printed"
+  },
+  {
+    "id": "nmfc-null",
+    "fn": "v7_format",
+    "args": {
+      "kind": "nmfc",
+      "value": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null -> unknown"
+  },
+  {
+    "id": "v7-unknown-kind",
+    "fn": "v7_format",
+    "args": {
+      "kind": "vat",
+      "value": "GB123456789"
+    },
+    "expected_error": "unknown_format",
+    "why": "8.3 unknown kind"
+  },
+  {
+    "id": "v7-empty-kind",
+    "fn": "v7_format",
+    "args": {
+      "kind": "",
+      "value": "ABCD"
+    },
+    "expected_error": "unknown_format",
+    "why": "8.3 unknown kind"
+  },
+  {
+    "id": "v8-positive-kg",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "10",
+        "unit": "KG"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 > 0, unit in set"
+  },
+  {
+    "id": "v8-positive-lb",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "1500.5",
+        "unit": "LB"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 > 0, unit in set"
+  },
+  {
+    "id": "v8-small-positive",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "0.001",
+        "unit": "KG"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 any value > 0"
+  },
+  {
+    "id": "v8-ea",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "3",
+        "unit": "EA"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 EA in set"
+  },
+  {
+    "id": "v8-pcs",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "3",
+        "unit": "PCS"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 PCS in set"
+  },
+  {
+    "id": "v8-plt",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "2",
+        "unit": "PLT"
+      }
+    },
+    "expected": "pass",
+    "why": "8.3 PLT in set"
+  },
+  {
+    "id": "v8-zero",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "0",
+        "unit": "KG"
+      }
+    },
+    "expected": "fail",
+    "why": "8.3 0 is not > 0"
+  },
+  {
+    "id": "v8-zero-decimal",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "0.00",
+        "unit": "LB"
+      }
+    },
+    "expected": "fail",
+    "why": "8.3 0.00 is not > 0"
+  },
+  {
+    "id": "v8-negative",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "-1",
+        "unit": "LB"
+      }
+    },
+    "expected": "fail",
+    "why": "8.3 negative"
+  },
+  {
+    "id": "v8-unit-outside-set",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "10",
+        "unit": "XYZ"
+      }
+    },
+    "expected": "fail",
+    "why": "8.3 unit not in the closed set"
+  },
+  {
+    "id": "v8-zero-and-bad-unit",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "0",
+        "unit": "XYZ"
+      }
+    },
+    "expected": "fail",
+    "why": "8.3 both conditions fail"
+  },
+  {
+    "id": "v8-null",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": null
+    },
+    "expected": "unknown",
+    "why": "8.3 null -> unknown"
+  },
+  {
+    "id": "v8-null-value",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": null,
+        "unit": "KG"
+      }
+    },
+    "expected": "unknown",
+    "why": "8.3 a null input the rule needs -> unknown"
+  },
+  {
+    "id": "v8-null-unit",
+    "fn": "v8_positive",
+    "args": {
+      "quantity": {
+        "value": "10",
+        "unit": null
+      }
+    },
+    "expected": "unknown",
+    "why": "8.3 a null input the rule needs -> unknown"
+  }
+]

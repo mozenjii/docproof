@@ -1,0 +1,1552 @@
+[
+  {
+    "id": "date-iso",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-04-03",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 ISO YYYY-MM-DD"
+  },
+  {
+    "id": "date-iso-hint-irrelevant",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-04-03",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 ISO is unambiguous"
+  },
+  {
+    "id": "date-iso-whitespace",
+    "fn": "parse_date",
+    "args": {
+      "text": "  2026-04-03\t",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 surrounding whitespace ignored"
+  },
+  {
+    "id": "date-iso-impossible",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-02-30",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 impossible date invalid"
+  },
+  {
+    "id": "date-iso-month-13",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-13-01",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 impossible date invalid"
+  },
+  {
+    "id": "date-iso-single-digit-parts",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-4-3",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 ISO is YYYY-MM-DD; year-first numeric is no other accepted shape"
+  },
+  {
+    "id": "date-year-first-slash",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026/04/03",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 year-first only in ISO with -"
+  },
+  {
+    "id": "date-iso-with-time",
+    "fn": "parse_date",
+    "args": {
+      "text": "2026-04-03T10:00",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 any other shape invalid"
+  },
+  {
+    "id": "date-ambiguous-null",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "2026-03-04",
+        "2026-04-03"
+      ]
+    },
+    "why": "8.2 both <=12, differ, null -> ambiguous, readings sorted"
+  },
+  {
+    "id": "date-ambiguous-sorted-not-order",
+    "fn": "parse_date",
+    "args": {
+      "text": "11/02/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "2026-02-11",
+        "2026-11-02"
+      ]
+    },
+    "why": "8.2 readings sorted, not in A-day/A-month order"
+  },
+  {
+    "id": "date-ambiguous-single-digits",
+    "fn": "parse_date",
+    "args": {
+      "text": "3/4/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "2026-03-04",
+        "2026-04-03"
+      ]
+    },
+    "why": "8.2 A and B may be 1 digit"
+  },
+  {
+    "id": "date-ambiguous-12-vs-1",
+    "fn": "parse_date",
+    "args": {
+      "text": "1/12/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "2026-01-12",
+        "2026-12-01"
+      ]
+    },
+    "why": "8.2 12 is still <= 12"
+  },
+  {
+    "id": "date-ambiguous-12-04",
+    "fn": "parse_date",
+    "args": {
+      "text": "12/04/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "2026-04-12",
+        "2026-12-04"
+      ]
+    },
+    "why": "8.2 boundary 12 is ambiguous"
+  },
+  {
+    "id": "date-day-first-true",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04/2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 day_first true -> A is day"
+  },
+  {
+    "id": "date-day-first-false",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04/2026",
+      "day_first": false
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-03-04"
+    },
+    "why": "8.2 day_first false -> A is month"
+  },
+  {
+    "id": "date-dot-day-first",
+    "fn": "parse_date",
+    "args": {
+      "text": "3.4.2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 . separator"
+  },
+  {
+    "id": "date-dash-month-first",
+    "fn": "parse_date",
+    "args": {
+      "text": "3-4-2026",
+      "day_first": false
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-03-04"
+    },
+    "why": "8.2 - separator"
+  },
+  {
+    "id": "date-10-11-day-first",
+    "fn": "parse_date",
+    "args": {
+      "text": "10/11/2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-11-10"
+    },
+    "why": "8.2 day_first true -> A is day"
+  },
+  {
+    "id": "date-13-overrides-false",
+    "fn": "parse_date",
+    "args": {
+      "text": "13/04/2026",
+      "day_first": false
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-13"
+    },
+    "why": "8.2 >12 is the day whatever day_first says"
+  },
+  {
+    "id": "date-13-null",
+    "fn": "parse_date",
+    "args": {
+      "text": "13/04/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-13"
+    },
+    "why": "8.2 day 13 is proof"
+  },
+  {
+    "id": "date-b13-overrides-true",
+    "fn": "parse_date",
+    "args": {
+      "text": "04/13/2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-13"
+    },
+    "why": "8.2 B > 12 is the day whatever day_first says"
+  },
+  {
+    "id": "date-12-13-null",
+    "fn": "parse_date",
+    "args": {
+      "text": "12/13/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-12-13"
+    },
+    "why": "8.2 13 is day, 12 is month"
+  },
+  {
+    "id": "date-25-12-false",
+    "fn": "parse_date",
+    "args": {
+      "text": "25.12.2026",
+      "day_first": false
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-12-25"
+    },
+    "why": "8.2 >12 is day, hint ignored"
+  },
+  {
+    "id": "date-equal-parts",
+    "fn": "parse_date",
+    "args": {
+      "text": "12/12/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-12-12"
+    },
+    "why": "8.2 A = B is unambiguous"
+  },
+  {
+    "id": "date-equal-parts-05",
+    "fn": "parse_date",
+    "args": {
+      "text": "05/05/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-05-05"
+    },
+    "why": "8.2 A = B is unambiguous"
+  },
+  {
+    "id": "date-equal-1-1",
+    "fn": "parse_date",
+    "args": {
+      "text": "1/1/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-01-01"
+    },
+    "why": "8.2 A = B is unambiguous"
+  },
+  {
+    "id": "date-equal-01-1",
+    "fn": "parse_date",
+    "args": {
+      "text": "01/1/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-01-01"
+    },
+    "why": "8.2 A = B numerically (01 and 1) is unambiguous"
+  },
+  {
+    "id": "date-both-over-12",
+    "fn": "parse_date",
+    "args": {
+      "text": "13/13/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 no month <= 12 -> impossible date"
+  },
+  {
+    "id": "date-31-feb",
+    "fn": "parse_date",
+    "args": {
+      "text": "31/02/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 impossible date (the contract's own example)"
+  },
+  {
+    "id": "date-feb-31-month-first",
+    "fn": "parse_date",
+    "args": {
+      "text": "02/31/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 31 is day of Feb -> impossible"
+  },
+  {
+    "id": "date-leap-day-2024",
+    "fn": "parse_date",
+    "args": {
+      "text": "29/02/2024",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2024-02-29"
+    },
+    "why": "8.2 29 > 12 is day; 2024 is leap"
+  },
+  {
+    "id": "date-leap-day-month-first",
+    "fn": "parse_date",
+    "args": {
+      "text": "02/29/2024",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2024-02-29"
+    },
+    "why": "8.2 29 is day whatever day_first says"
+  },
+  {
+    "id": "date-not-leap-2026",
+    "fn": "parse_date",
+    "args": {
+      "text": "29/02/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 2026 not leap -> impossible"
+  },
+  {
+    "id": "date-zero-part",
+    "fn": "parse_date",
+    "args": {
+      "text": "00/04/2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 day or month 0 impossible in either reading"
+  },
+  {
+    "id": "date-zero-part-hinted",
+    "fn": "parse_date",
+    "args": {
+      "text": "00/04/2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 day 0 impossible"
+  },
+  {
+    "id": "date-mixed-separators",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04-2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 the same separator twice"
+  },
+  {
+    "id": "date-three-digit-part",
+    "fn": "parse_date",
+    "args": {
+      "text": "003/04/2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 A and B 1-2 digits"
+  },
+  {
+    "id": "date-two-digit-year",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04/26",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 two-digit years invalid"
+  },
+  {
+    "id": "date-five-digit-year",
+    "fn": "parse_date",
+    "args": {
+      "text": "03/04/02026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 YYYY is four digits"
+  },
+  {
+    "id": "date-space-separator",
+    "fn": "parse_date",
+    "args": {
+      "text": "03 04 2026",
+      "day_first": true
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 separator one of / - ."
+  },
+  {
+    "id": "date-empty",
+    "fn": "parse_date",
+    "args": {
+      "text": "",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 any other shape invalid"
+  },
+  {
+    "id": "date-words",
+    "fn": "parse_date",
+    "args": {
+      "text": "not a date",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 any other shape invalid"
+  },
+  {
+    "id": "date-name-d-month-yyyy",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 April 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 month-name shape"
+  },
+  {
+    "id": "date-name-d-mon-yyyy",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 Apr 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 three-letter month"
+  },
+  {
+    "id": "date-name-dd-mon-yyyy-dash",
+    "fn": "parse_date",
+    "args": {
+      "text": "03-Apr-2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 DD-Mon-YYYY"
+  },
+  {
+    "id": "date-name-month-d-comma",
+    "fn": "parse_date",
+    "args": {
+      "text": "April 3, 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 Month D, YYYY"
+  },
+  {
+    "id": "date-name-mon-d-yyyy",
+    "fn": "parse_date",
+    "args": {
+      "text": "Apr 3 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 Mon D YYYY"
+  },
+  {
+    "id": "date-name-upper",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 APRIL 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 any case"
+  },
+  {
+    "id": "date-name-lower",
+    "fn": "parse_date",
+    "args": {
+      "text": "april 3, 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 any case"
+  },
+  {
+    "id": "date-name-dash-lower",
+    "fn": "parse_date",
+    "args": {
+      "text": "03-apr-2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 any case"
+  },
+  {
+    "id": "date-name-hint-ignored",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 April 2026",
+      "day_first": false
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2/4 explicit month name is unambiguous"
+  },
+  {
+    "id": "date-name-sep",
+    "fn": "parse_date",
+    "args": {
+      "text": "Sep 3 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-09-03"
+    },
+    "why": "8.2 three-letter Sep"
+  },
+  {
+    "id": "date-name-sept-four-letters",
+    "fn": "parse_date",
+    "args": {
+      "text": "Sept 3 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 full or three-letter only"
+  },
+  {
+    "id": "date-name-impossible",
+    "fn": "parse_date",
+    "args": {
+      "text": "31 April 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 impossible date"
+  },
+  {
+    "id": "date-name-two-digit-year",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 April 26",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 two-digit years invalid"
+  },
+  {
+    "id": "date-name-whitespace",
+    "fn": "parse_date",
+    "args": {
+      "text": "  3 Apr 2026  ",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-04-03"
+    },
+    "why": "8.2 surrounding whitespace ignored"
+  },
+  {
+    "id": "date-name-not-a-month",
+    "fn": "parse_date",
+    "args": {
+      "text": "3 Foo 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 any other shape invalid"
+  },
+  {
+    "id": "date-name-december",
+    "fn": "parse_date",
+    "args": {
+      "text": "December 31, 2026",
+      "day_first": null
+    },
+    "expected": {
+      "kind": "date",
+      "value": "2026-12-31"
+    },
+    "why": "8.2 full month name"
+  },
+  {
+    "id": "amt-plain",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 single . with 2 digits is decimal; trailing zero kept"
+  },
+  {
+    "id": "amt-one-decimal",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12.5",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.5"
+    },
+    "why": "8.2 as printed; not padded"
+  },
+  {
+    "id": "amt-integer",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1234",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234"
+    },
+    "why": "8.2 no separator: integer"
+  },
+  {
+    "id": "amt-zero-point-five",
+    "fn": "parse_amount",
+    "args": {
+      "text": "0.5",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "0.5"
+    },
+    "why": "8.2 1 digit after: decimal"
+  },
+  {
+    "id": "amt-us-grouped",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234.56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.56"
+    },
+    "why": "8.2 both present: rightmost is decimal"
+  },
+  {
+    "id": "amt-eu-grouped",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234,56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.56"
+    },
+    "why": "8.2 both present: rightmost , is decimal"
+  },
+  {
+    "id": "amt-us-multi-group",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234,567.89",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567.89"
+    },
+    "why": "8.2 3-digit groups"
+  },
+  {
+    "id": "amt-eu-multi-group",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234.567,89",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567.89"
+    },
+    "why": "8.2 3-digit groups"
+  },
+  {
+    "id": "amt-eu-million-zero-cents",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.000.000,00",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1000000.00"
+    },
+    "why": "8.2 trailing zeros kept"
+  },
+  {
+    "id": "amt-both-three-after-decimal",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234,567",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.567"
+    },
+    "why": "8.2 both present: rightmost is decimal even with 3 digits after (not ambiguous)"
+  },
+  {
+    "id": "amt-both-three-after-decimal-hint",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234.567",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.567"
+    },
+    "why": "8.2 both present: rightmost decides; hint ignored"
+  },
+  {
+    "id": "amt-both-hint-contradicts",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234.56",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.56"
+    },
+    "why": "8.2 both present is unambiguous; hint ignored"
+  },
+  {
+    "id": "amt-both-one-decimal",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234.5",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.5"
+    },
+    "why": "8.2 both present"
+  },
+  {
+    "id": "amt-both-long-decimal",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234,567.891",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567.891"
+    },
+    "why": "8.2 both present"
+  },
+  {
+    "id": "amt-both-bad-group-2",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12,34.56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 grouping not in 3-digit groups"
+  },
+  {
+    "id": "amt-both-bad-group-4",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,2345.67",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 grouping not in 3-digit groups"
+  },
+  {
+    "id": "amt-both-indian-grouping",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,23,456.78",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 2-digit groups invalid"
+  },
+  {
+    "id": "amt-both-decimal-kind-repeated",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234.567.89",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 grouping part contains the decimal separator kind"
+  },
+  {
+    "id": "amt-repeat-comma-grouping",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234,567",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567"
+    },
+    "why": "8.2 one kind repeated: grouping, no decimals"
+  },
+  {
+    "id": "amt-repeat-dot-grouping",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234.567",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567"
+    },
+    "why": "8.2 one kind repeated: grouping, no decimals"
+  },
+  {
+    "id": "amt-repeat-dot-hint-ignored",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234.567",
+      "decimal_comma": false
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234567"
+    },
+    "why": "8.2 repetition proves grouping"
+  },
+  {
+    "id": "amt-repeat-bad-groups",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,23,456",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 grouping not 3-digit"
+  },
+  {
+    "id": "amt-repeat-short-last-group",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234,56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 repeated kind is grouping; last group 2 digits"
+  },
+  {
+    "id": "amt-repeat-dot-short-last",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234.56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 repeated kind is grouping; last group 2 digits"
+  },
+  {
+    "id": "amt-comma-3-null",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "1.234",
+        "1234"
+      ]
+    },
+    "why": "8.2 once with 3 digits, null -> ambiguous, sorted numerically"
+  },
+  {
+    "id": "amt-comma-3-true",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.234"
+    },
+    "why": "8.2 decimal_comma true: , is decimal"
+  },
+  {
+    "id": "amt-comma-3-false",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,234",
+      "decimal_comma": false
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234"
+    },
+    "why": "8.2 decimal_comma false: , is grouping"
+  },
+  {
+    "id": "amt-dot-3-true",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234"
+    },
+    "why": "8.2 mirror: decimal_comma true makes . grouping"
+  },
+  {
+    "id": "amt-dot-3-false",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234",
+      "decimal_comma": false
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.234"
+    },
+    "why": "8.2 mirror: decimal_comma false makes . decimal"
+  },
+  {
+    "id": "amt-dot-3-null",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.234",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "1.234",
+        "1234"
+      ]
+    },
+    "why": "8.2 null -> ambiguous"
+  },
+  {
+    "id": "amt-comma-000-null",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,000",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "1.000",
+        "1000"
+      ]
+    },
+    "why": "8.2 readings as printed (1.000 keeps zeros)"
+  },
+  {
+    "id": "amt-negative-ambiguous-sorted",
+    "fn": "parse_amount",
+    "args": {
+      "text": "-1,234",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "-1234",
+        "-1.234"
+      ]
+    },
+    "why": "8.2 sorted numerically: -1234 < -1.234"
+  },
+  {
+    "id": "amt-paren-ambiguous-sorted",
+    "fn": "parse_amount",
+    "args": {
+      "text": "(1.234)",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "ambiguous",
+      "readings": [
+        "-1234",
+        "-1.234"
+      ]
+    },
+    "why": "8.2 parentheses negative; sorted numerically"
+  },
+  {
+    "id": "amt-comma-1-digit",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,5",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.5"
+    },
+    "why": "8.2 once with 1 digit: decimal"
+  },
+  {
+    "id": "amt-comma-2-hint-false-ignored",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,50",
+      "decimal_comma": false
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.50"
+    },
+    "why": "8.2 once with 2 digits is decimal whatever hint says"
+  },
+  {
+    "id": "amt-dot-2-hint-true-ignored",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12.50",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 once with 2 digits is decimal whatever hint says"
+  },
+  {
+    "id": "amt-dot-4-hint-true-ignored",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1.2345",
+      "decimal_comma": true
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.2345"
+    },
+    "why": "8.2 >=4 digits after: decimal"
+  },
+  {
+    "id": "amt-comma-4",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1,2345",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1.2345"
+    },
+    "why": "8.2 >=4 digits after: decimal"
+  },
+  {
+    "id": "amt-comma-cents",
+    "fn": "parse_amount",
+    "args": {
+      "text": "0,99",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "0.99"
+    },
+    "why": "8.2 2 digits after: decimal"
+  },
+  {
+    "id": "amt-negative",
+    "fn": "parse_amount",
+    "args": {
+      "text": "-12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "-12.50"
+    },
+    "why": "8.2 leading - negative"
+  },
+  {
+    "id": "amt-parentheses",
+    "fn": "parse_amount",
+    "args": {
+      "text": "(12.50)",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "-12.50"
+    },
+    "why": "8.2 parentheses negative"
+  },
+  {
+    "id": "amt-parentheses-grouped",
+    "fn": "parse_amount",
+    "args": {
+      "text": "(1,234.56)",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "-1234.56"
+    },
+    "why": "8.2 parentheses negative"
+  },
+  {
+    "id": "amt-dollar",
+    "fn": "parse_amount",
+    "args": {
+      "text": "$12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 $ stripped"
+  },
+  {
+    "id": "amt-euro-eu",
+    "fn": "parse_amount",
+    "args": {
+      "text": "€1.234,56",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1234.56"
+    },
+    "why": "8.2 € stripped"
+  },
+  {
+    "id": "amt-pound",
+    "fn": "parse_amount",
+    "args": {
+      "text": "£12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 £ stripped"
+  },
+  {
+    "id": "amt-yen",
+    "fn": "parse_amount",
+    "args": {
+      "text": "¥1500",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "1500"
+    },
+    "why": "8.2 ¥ stripped"
+  },
+  {
+    "id": "amt-leading-iso",
+    "fn": "parse_amount",
+    "args": {
+      "text": "USD 12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 leading ISO code stripped"
+  },
+  {
+    "id": "amt-trailing-iso",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12.50 EUR",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 trailing ISO code stripped"
+  },
+  {
+    "id": "amt-whitespace",
+    "fn": "parse_amount",
+    "args": {
+      "text": "  12.50 ",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "12.50"
+    },
+    "why": "8.2 surrounding whitespace stripped"
+  },
+  {
+    "id": "amt-symbol-then-minus",
+    "fn": "parse_amount",
+    "args": {
+      "text": "$-12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "-12.50"
+    },
+    "why": "8.2 symbol stripped first, then leading -"
+  },
+  {
+    "id": "amt-parens-single3-hint",
+    "fn": "parse_amount",
+    "args": {
+      "text": "(1,234)",
+      "decimal_comma": false
+    },
+    "expected": {
+      "kind": "amount",
+      "value": "-1234"
+    },
+    "why": "8.2 parentheses negative; hint resolves single-3"
+  },
+  {
+    "id": "amt-two-minus",
+    "fn": "parse_amount",
+    "args": {
+      "text": "--12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 two signs invalid"
+  },
+  {
+    "id": "amt-minus-and-parens",
+    "fn": "parse_amount",
+    "args": {
+      "text": "-(12.50)",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 two signs invalid"
+  },
+  {
+    "id": "amt-unbalanced-paren",
+    "fn": "parse_amount",
+    "args": {
+      "text": "(12.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 parentheses must enclose; anything else invalid"
+  },
+  {
+    "id": "amt-trailing-minus",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12.50-",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 only a leading - is a sign"
+  },
+  {
+    "id": "amt-empty",
+    "fn": "parse_amount",
+    "args": {
+      "text": "",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 empty invalid"
+  },
+  {
+    "id": "amt-blank",
+    "fn": "parse_amount",
+    "args": {
+      "text": "   ",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 empty after stripping"
+  },
+  {
+    "id": "amt-code-only",
+    "fn": "parse_amount",
+    "args": {
+      "text": "USD",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 empty after stripping the code"
+  },
+  {
+    "id": "amt-symbol-only",
+    "fn": "parse_amount",
+    "args": {
+      "text": "$",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 empty after stripping the symbol"
+  },
+  {
+    "id": "amt-letters",
+    "fn": "parse_amount",
+    "args": {
+      "text": "abc",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 letters invalid"
+  },
+  {
+    "id": "amt-trailing-letter",
+    "fn": "parse_amount",
+    "args": {
+      "text": "12a",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 letters invalid"
+  },
+  {
+    "id": "amt-inner-letter",
+    "fn": "parse_amount",
+    "args": {
+      "text": "1O.50",
+      "decimal_comma": null
+    },
+    "expected": {
+      "kind": "invalid"
+    },
+    "why": "8.2 letter O is not a digit; no OCR folding"
+  }
+]
