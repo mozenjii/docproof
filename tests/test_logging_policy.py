@@ -57,10 +57,15 @@ def _violations(tree: ast.Module) -> list[str]:
         elif isinstance(node, ast.Name) and node.id == "__import__":
             found.append(f"{node.lineno}: __import__")
         elif isinstance(node, ast.Attribute):
-            if node.attr in STREAMS and id(node) not in in_main:
+            on_sys = isinstance(node.value, ast.Name) and node.value.id == "sys"
+            if on_sys and node.attr in STREAMS and id(node) not in in_main:
                 found.append(f"{node.lineno}: sys.{node.attr} outside main()")
             if node.attr in {"logging", "_logging"}:
                 found.append(f"{node.lineno}: reaches a logging module through an attribute")
+        elif isinstance(node, ast.ImportFrom) and node.module == "sys":
+            streams = [a.name for a in node.names if a.name in STREAMS]
+            if streams:
+                found.append(f"{node.lineno}: imports {streams} from sys")
         elif isinstance(node, ast.ImportFrom) and node.module == "docproof.safelog":
             private = [a.name for a in node.names if a.name.startswith("_") or a.name == "logging"]
             if private:
@@ -94,6 +99,7 @@ BYPASSES = {
     "import docproof.safelog as s\ns._logging.getLogger('x')": "attribute",
     "__import__('logging')": "__import__",
     "import sys\nsys.stderr.write('x')": "sys.stderr",
+    "from sys import stdout": "from sys",
     "p = print": "print outside",
     "import builtins": "builtins",
     "import importlib": "importlib",
@@ -107,6 +113,13 @@ def test_the_policy_catches_known_bypasses(source: str) -> None:
     tree = ast.parse(source)
     reasons = " ".join(_violations(tree)) + " " + " ".join(sorted(_imports(tree)))
     assert BYPASSES[source] in reasons
+
+
+def test_a_subprocess_result_is_not_a_stream() -> None:
+    tree = ast.parse(
+        "import subprocess\nout = subprocess.run(['git'], capture_output=True).stdout\n"
+    )
+    assert _violations(tree) == []
 
 
 def test_the_policy_allows_a_cli_main() -> None:
