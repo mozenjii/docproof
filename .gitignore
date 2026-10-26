@@ -22,6 +22,7 @@ build/
 # data and run output
 data/raw/
 data/cache/
+data/synthetic/
 runs/
 *.sqlite
 *.log
