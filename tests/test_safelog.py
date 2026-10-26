@@ -181,3 +181,25 @@ def test_short_keys_and_free_text_logger_names_are_refused() -> None:
         Redactor(b"")
     with pytest.raises(ValueError, match="module path"):
         SafeLogger("Jane Roe")
+
+
+@pytest.mark.parametrize("key", ["invoice_total", "bank_account_number", "amount_due", "tax_rate"])
+def test_names_containing_a_sensitive_word_must_be_redacted(key: str) -> None:
+    with pytest.raises(TypeError, match="names document data"):
+        SafeLogger("docproof.test").info("doc.x", **{key: 1.5})
+
+
+@pytest.mark.parametrize("key", ["fields", "seconds", "pages", "documents", "rows"])
+def test_ordinary_counts_are_still_allowed(key: str) -> None:
+    SafeLogger("docproof.test").info("doc.x", **{key: 3})
+
+
+def test_a_long_value_in_a_public_field_is_masked() -> None:
+    currency = field_spec(INV, "currency")
+    assert Redactor(KEY).redact(currency, "GB82WEST12345698765432") == Safe("[unvalidated]")
+
+
+@pytest.mark.parametrize("text", ["a b", "a=b", "x" + chr(0x202E) + "y", "a" + chr(9) + "b"])
+def test_safe_text_cannot_forge_a_field(text: str) -> None:
+    with pytest.raises(ValueError, match="whitespace"):
+        Safe(text)

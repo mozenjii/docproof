@@ -8,14 +8,15 @@ than documents. So the rules here are structural rather than a matter of care:
 - Field values must be exact ``int``/``float``/``bool``, ``None``, a member of one of docproof's
   own enums, or :class:`Safe` text. A plain ``str``, a subclass of a number and an enum made up on
   the spot are all refused, by the type checker where it can see them and always at runtime.
-- :class:`Safe` text may not contain line breaks or other control characters, so a value cannot
-  forge a second log record.
-- A field whose name matches a document field or a money-ish word (``total``, ``iban``,
-  ``amount``…) must be :class:`Safe`, which in practice means it came from :func:`Redactor.redact`.
+- :class:`Safe` text may not contain whitespace, ``=``, line breaks, control characters or
+  bidirectional overrides, so a value cannot forge a second record or a second field.
+- A field whose name is a document field or contains a sensitive word (``invoice_total``,
+  ``amount_due``, ``bank_account_number``) must be :class:`Safe`, which in practice means it came
+  from :meth:`Redactor.redact`.
   That closes the easy mistake of logging ``float(total)`` as a number.
 - :meth:`Redactor.redact` renders an extracted value by its field's sensitivity: public values only
-  if they look like a code (otherwise ``[unvalidated]``), business values as a keyed hash, personal
-  and financial values as a bare marker.
+  if they look like a short code (otherwise ``[unvalidated]``), business values as a keyed hash,
+  personal and financial values as a bare marker.
 - Errors are logged by type and code only. Messages are dropped, because ours quote the offending
   value, and refusals here never echo the text they refused.
 
@@ -41,15 +42,59 @@ from docproof.schema import SCHEMAS, FieldSpec, FieldValue, Sensitivity
 
 _EVENT = re.compile(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*")
 _FIELD_KEY = re.compile(r"[a-z][a-z0-9_]*")
-_PUBLIC_TEXT = re.compile(r"[A-Za-z0-9._-]{1,32}")
-_CONTROL = re.compile("[\x00-\x1f\x7f\x85\u2028\u2029]")
+# Public values today are codes (an ISO currency). Anything longer is not a code: an IBAN extracted
+# into the currency field must not be printed just because the field is public.
+_PUBLIC_TEXT = re.compile(r"[A-Za-z0-9._-]{1,8}")
+# Whitespace and "=" would let one value forge another key=value pair on the same line; the rest
+# are line breaks, control characters and bidirectional overrides that change what a reader sees.
+_UNSAFE_TEXT = re.compile(
+    r"[\s=\x00-\x1f\x7f\x85\u2028\u2029\u200e\u200f\u202a-\u202e\u2066-\u2069]"
+)
 _MIN_KEY_BYTES = 16
 
 SENSITIVE_FIELD_NAMES: frozenset[str] = frozenset(
     {spec.name for specs in SCHEMAS.values() for spec in specs}
-    | {"amount", "account", "iban", "price", "balance", "value", "name", "address"}
 )
-"""Log field names that must carry :class:`Safe` text, never a bare number or enum."""
+"""Document field names: a log field with one of these names must carry :class:`Safe` text."""
+
+SENSITIVE_WORDS: frozenset[str] = frozenset(
+    {
+        "amount",
+        "account",
+        "address",
+        "balance",
+        "bank",
+        "broker",
+        "buyer",
+        "carrier",
+        "consignee",
+        "due",
+        "iban",
+        "name",
+        "payment",
+        "price",
+        "rate",
+        "shipper",
+        "subtotal",
+        "tax",
+        "total",
+        "value",
+        "vendor",
+    }
+)
+"""Words that make any log field name sensitive (``invoice_total``, ``amount_due``)."""
+
+
+def is_sensitive_key(key: str) -> bool:
+    """Whether a log field name must carry redacted :class:`Safe` text rather than a number.
+
+    Args:
+        key: A lower_snake_case log field name.
+
+    Returns:
+        True for a document field name or any name containing a sensitive word.
+    """
+    return key in SENSITIVE_FIELD_NAMES or not SENSITIVE_WORDS.isdisjoint(key.split("_"))
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,8 +112,8 @@ class Safe:
 
     def __post_init__(self) -> None:
         """Refuse text that could break a log line in two."""
-        if _CONTROL.search(self.text):
-            raise ValueError("Safe text may not contain line breaks or control characters")
+        if _UNSAFE_TEXT.search(self.text):
+            raise ValueError("Safe text may not contain whitespace, '=' or control characters")
 
 
 type LogValue = int | float | bool | Enum | Safe | None
@@ -147,7 +192,7 @@ def _check_fields(fields: dict[str, LogValue]) -> None:
             raise TypeError(
                 f"log field {key!r} got {type(value).__name__}; wrap text in Safe or redact it"
             )
-        if key in SENSITIVE_FIELD_NAMES and not isinstance(value, Safe | None):
+        if is_sensitive_key(key) and not isinstance(value, Safe | None):
             raise TypeError(f"log field {key!r} names document data; pass Redactor.redact(...)")
 
 
