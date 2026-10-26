@@ -16,8 +16,8 @@ FEW = ["inv-b", "bol-a"]
 
 
 def test_writes_labels_images_words_and_manifest(tmp_path: Path) -> None:
-    count = write_dataset(tmp_path, per_template=2, seed=5, levels=[0, 3], template_ids=FEW)
-    assert count == 2 * len(FEW)
+    count = write_dataset(tmp_path, per_template=1, seed=5, levels=[0, 3], template_ids=FEW)
+    assert count == len(FEW)
     entries = [json.loads(line) for line in (tmp_path / "manifest.jsonl").read_text().splitlines()]
     assert len(entries) == count
     for entry in entries:

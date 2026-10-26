@@ -255,6 +255,24 @@ def _rotate_box(box: Box, degrees: float) -> Box:
     return (math.floor(min(xs)), math.floor(min(ys)), math.ceil(max(xs)), math.ceil(max(ys)))
 
 
+def _speckle(image: Image.Image, fraction: float, seed: int) -> Image.Image:
+    """Flip about ``fraction`` of the pixels to black or white, like fax speckle.
+
+    One seeded random byte per pixel decides its fate: the lowest bytes turn black, the highest
+    white. Building the masks with ``bytes.translate`` and compositing them in Pillow keeps the
+    work in C instead of a Python loop over 3.9 million pixels.
+    """
+    rng = random.Random(seed)  # reproducible speckle, not a secret
+    cut = round(fraction * 128)
+    raw = rng.randbytes(image.width * image.height)
+    to_black = bytes(255 if v < cut else 0 for v in range(256))
+    to_white = bytes(255 if v >= 256 - cut else 0 for v in range(256))
+    black = Image.frombytes("L", image.size, raw.translate(to_black))
+    white = Image.frombytes("L", image.size, raw.translate(to_white))
+    speckled = Image.composite(Image.new("RGB", image.size, "black"), image, black)
+    return Image.composite(Image.new("RGB", image.size, "white"), speckled, white)
+
+
 def degrade(page: RenderedPage, damage: Degradation, seed: int) -> RenderedPage:
     """Apply scan damage and move the word boxes with the skew.
 
@@ -274,16 +292,7 @@ def degrade(page: RenderedPage, damage: Degradation, seed: int) -> RenderedPage:
     if damage.blur_radius:
         image = image.filter(ImageFilter.GaussianBlur(damage.blur_radius))
     if damage.noise:
-        image = image.copy()
-        rng = random.Random(seed)  # reproducible speckle, not a secret
-        width, height = image.size
-        pixels = image.load()
-        if pixels is None:
-            raise RuntimeError("could not access page pixels")
-        for _ in range(round(width * height * damage.noise)):
-            pixels[rng.randrange(width), rng.randrange(height)] = rng.choice(
-                ((0, 0, 0), (255, 255, 255))
-            )
+        image = _speckle(image, damage.noise, seed)
     if damage.jpeg_quality is not None:
         buffer = BytesIO()
         image.save(buffer, format="JPEG", quality=damage.jpeg_quality)
