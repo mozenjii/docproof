@@ -31,8 +31,12 @@ _TITLES = {
     DocumentType.BILL_OF_LADING: "BILL OF LADING",
     DocumentType.RATE_CONFIRMATION: "RATE CONFIRMATION",
 }
-_PRIMARY_PARTY = ("vendor", "shipper", "broker")
-_SECONDARY_PARTY = ("buyer", "consignee", "carrier")
+_HEADER_PARTIES = {
+    DocumentType.INVOICE: ("vendor", "buyer"),
+    DocumentType.FREIGHT_INVOICE: ("vendor", "buyer"),
+    DocumentType.BILL_OF_LADING: ("shipper", "consignee"),
+    DocumentType.RATE_CONFIRMATION: ("broker", "carrier"),
+}
 _TOTALS = ("subtotal", "tax_total", "total", "rate")
 
 type Box = tuple[int, int, int, int]
@@ -164,10 +168,12 @@ def render(document: SyntheticDocument) -> RenderedPage:
     canvas.text((MARGIN, y), _TITLES[tpl.doc_type], None, big=True)
     y += round(canvas.line_height * 2.2)
 
-    primary = next((by_name[n] for n in _PRIMARY_PARTY if n in by_name), None)
-    secondary = next(
-        (by_name[n] for n in _SECONDARY_PARTY if n in by_name and by_name[n] is not primary), None
-    )
+    # Each document type has one fixed pair of header parties. Filling an empty slot with another
+    # party (a consignee where the buyer would be) would leave an uncaptioned block whose role the
+    # page never states; that party keeps its caption in the body instead.
+    first, second = _HEADER_PARTIES[tpl.doc_type]
+    primary = by_name.get(first)
+    secondary = by_name.get(second)
     half = PAGE_SIZE[0] // 2
     left_end = _party_block(canvas, primary, MARGIN, y) if primary else y
     if secondary is not None:
