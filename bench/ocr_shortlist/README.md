@@ -77,9 +77,44 @@ timings and recall (including the missed tokens), a summary, versions and footpr
 The exit status is 0 on success, 2 when the engine is not installed (the reason is in the JSON),
 and 1 when anything else fails (the error and traceback are in the JSON and on stderr).
 
+## Degraded evaluation set
+
+On the pages above every engine read close to all of the text, so they could not tell the engines
+apart. `run_dataset.py` runs one engine over the harder evaluation set in
+`data/synthetic/ocr-eval/` (git-ignored, generated separately). Each document there is rendered at
+four levels, from 0 (clean) to 3 (a bad fax: skew up to 3.2 degrees, blur, speckle, JPEG quality
+25), and each page comes with `<doc_id>.L<n>.words.json`: every printed word with its box on that
+image and the schema field it belongs to (`null` for captions and titles).
+
+```sh
+"$VENVS"/rapidocr/Scripts/python.exe -m bench.ocr_shortlist.run_dataset \
+    --engine rapidocr --dataset data/synthetic/ocr-eval --out "$VENVS"/eval
+```
+
+For every page (document and level) the engine runs once, after one untimed warm-up call on the
+first page, and the runner records:
+
+- **Word recall**: multiset recall of every printed word, with the same normalisation as above.
+- **Field-word recall**: the same, restricted to words that belong to a schema field, which are
+  the values extraction needs.
+- **Located field-word rate**: the share of field words for which some detection contains the
+  word among its tokens and its axis-aligned box contains the centre of the word's box. This is
+  what grounding a value needs: the right text in the right place.
+- **Seconds per page**, and the number of detections.
+
+`<out>/<engine>.json` holds the per-page records (with the field tokens that were missed or not
+located, and per-field counts) and a summary per level: the mean of each metric and a 95%
+percentile bootstrap interval over documents (1,000 resamples, seed 0), plus per-field totals.
+`<out>/raw/<engine>/<doc_id>.L<n>.json` holds each page's detections and timing; `--rescore`
+recomputes everything from those files without running the engine. `--levels` picks levels
+(default all four) and `--limit N` keeps the first N documents, which I use for a quick smoke run.
+A page that raises is recorded with its error and traceback, left out of the means, counted as
+failed in the summary, and makes the exit status 1.
+
 ## Limits
 
-Synthetic pages are clean digital renders with one font, so recall here is an upper bound on what
-an engine achieves on real scans. Timings depend on the machine and on the thread count each
+The shortlist pages are clean digital renders with one font, so recall there is an upper bound on
+what an engine achieves on real scans. The evaluation set's degradations are simulated, not
+scanned, so it ranks engines on harder input but does not predict accuracy on real documents. Timings depend on the machine and on the thread count each
 runtime picks by default; compare engines measured on the same machine in the same session.
 The Tesseract adapter needs a system binary and has not been exercised on a machine that has one.
