@@ -163,3 +163,17 @@ def test_every_line_item_label_is_printed(doc: SyntheticDocument) -> None:
             assert unit == item.quantity.unit
             parsed = parse_amount(number, doc.template.locale.decimal_comma)
             assert parsed == Parsed(str(item.quantity.value))
+
+
+@pytest.mark.parametrize("doc", DOCS, ids=[d.doc_id for d in DOCS])
+def test_every_money_label_shows_its_currency_on_the_page(doc: SyntheticDocument) -> None:
+    printed = " ".join(line for f in doc.fields for line in f.lines)
+    printed += " " + " ".join(
+        cell
+        for row in doc.line_items + doc.accessorials
+        for cell in (row.unit_price, row.amount)
+        if cell
+    )
+    for name, value in doc.labels.items():
+        if isinstance(value, Money):
+            assert value.currency in printed.split(), (name, value.currency)

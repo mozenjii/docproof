@@ -214,7 +214,11 @@ class _Sampler:
 
 
 def _printed_money(tpl: Template, value: Money) -> str:
-    return format_money(value, tpl.locale, with_code=tpl.amounts_with_code)
+    # A document type without a currency field must name the currency next to each amount, or the
+    # label's currency would be something the page never shows.
+    has_currency_field = any(s.name == "currency" for s in SCHEMAS[tpl.doc_type])
+    with_code = tpl.amounts_with_code or not has_currency_field
+    return format_money(value, tpl.locale, with_code=with_code)
 
 
 def _printed(tpl: Template, value_type: ValueType, value: FieldValue) -> tuple[str, ...]:
