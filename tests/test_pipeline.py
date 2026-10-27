@@ -104,3 +104,20 @@ def test_threshold_extremes(threshold: float) -> None:
     doc = TRAIN_DOCS[0]
     result = process(perfect_page(doc), tolerance_minor=0, threshold=threshold)
     assert {f.name for f in result.fields} == set(doc.labels)
+
+
+def test_absence_is_only_accepted_on_a_layout_the_extractor_reads() -> None:
+    unseen = sample_document(template("inv-h"), 0, seed=5)  # "Factuur" hides the invoice number
+    result = process(perfect_page(unseen), tolerance_minor=0, threshold=0.5)
+    absent = [f for f in result.fields if f.value is NOT_PRESENT]
+    assert absent
+    assert all(f.decision.status is Status.FLAGGED for f in absent)
+    seen = TRAIN_DOCS[0]
+    result = process(perfect_page(seen), tolerance_minor=0, threshold=0.5)
+    optional_absent = [
+        f
+        for f in result.fields
+        if f.value is NOT_PRESENT and not field_spec(seen.template.doc_type, f.name).required
+    ]
+    assert optional_absent
+    assert all(f.decision.status is Status.ACCEPTED for f in optional_absent)

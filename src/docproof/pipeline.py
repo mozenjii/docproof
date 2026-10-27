@@ -277,7 +277,13 @@ def route_extraction(
     if extraction.doc_type is None:
         return DocumentResult(None, ())
     values = {name: c.value for name, c in extraction.candidates.items()}
-    absent_confidence = page_confidence(page)
+    # "I did not find it" is evidence of absence only on a layout the extractor demonstrably
+    # reads, meaning it found every required field. Elsewhere an absence claim gets no confidence,
+    # so it goes to a person. Without this rule absence claims were ~75% of wrong accepts.
+    layout_read = all(
+        spec.name in extraction.candidates for spec in SCHEMAS[extraction.doc_type] if spec.required
+    )
+    absent_confidence = page_confidence(page) if layout_read else None
     results: list[FieldResult] = []
     for spec in SCHEMAS[extraction.doc_type]:
         candidate = extraction.candidates.get(spec.name)
