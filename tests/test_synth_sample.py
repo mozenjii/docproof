@@ -148,3 +148,18 @@ def test_splits_hold_out_whole_templates() -> None:
 def test_unknown_template_is_an_error() -> None:
     with pytest.raises(KeyError, match="no template"):
         template("inv-z")
+
+
+@pytest.mark.parametrize("doc", DOCS, ids=[d.doc_id for d in DOCS])
+def test_every_line_item_label_is_printed(doc: SyntheticDocument) -> None:
+    items = _items(doc, "line_items") + _items(doc, "accessorials")
+    rows = doc.line_items + doc.accessorials
+    assert len(items) == len(rows)
+    for item, row in zip(items, rows, strict=True):
+        assert row.description == item.description
+        if item.quantity is not None:
+            assert row.quantity is not None
+            number, unit = row.quantity.rsplit(" ", 1)
+            assert unit == item.quantity.unit
+            parsed = parse_amount(number, doc.template.locale.decimal_comma)
+            assert parsed == Parsed(str(item.quantity.value))

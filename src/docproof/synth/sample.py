@@ -238,7 +238,11 @@ def _printed_rows(tpl: Template, items: tuple[LineItem, ...]) -> tuple[PrintedLi
     return tuple(
         PrintedLineItem(
             description=item.description,
-            quantity=None if item.quantity is None else format_quantity(item.quantity, tpl.locale),
+            # The unit is part of the label, so it has to be printed: a label holding something
+            # that is not on the page cannot be extracted and would be scored wrong forever.
+            quantity=None
+            if item.quantity is None
+            else f"{format_quantity(item.quantity, tpl.locale)} {item.quantity.unit}",
             unit_price=None if item.unit_price is None else _printed_money(tpl, item.unit_price),
             amount=_printed_money(tpl, item.amount),
         )
