@@ -39,6 +39,9 @@ class _Absent(Enum):
 NOT_PRESENT = _Absent.NOT_PRESENT
 """A prediction that the field does not appear on the document."""
 
+type PredictedValue = FieldValue | _Absent | None
+"""What a prediction holds: a value, :data:`NOT_PRESENT`, or ``None`` for an abstention."""
+
 
 @dataclass(frozen=True, slots=True)
 class FieldPrediction:
@@ -49,7 +52,7 @@ class FieldPrediction:
         status: The routing outcome.
     """
 
-    value: FieldValue | _Absent | None
+    value: PredictedValue
     status: Status
 
 
