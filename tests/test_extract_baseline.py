@@ -131,10 +131,22 @@ def test_an_unrecognised_document_yields_nothing() -> None:
 def test_money_edge_cases() -> None:
     unknown = Locale(None, None, None)
     assert typed_value(ValueType.MONEY, "12.50 XYZ", unknown) is None  # not a currency we know
-    assert typed_value(ValueType.MONEY, "12.505 USD", unknown) is None  # more decimals than USD has
-    ambiguous = typed_value(ValueType.MONEY, "1,234 USD", unknown)
-    assert ambiguous is not None
-    assert ambiguous[1] is True
+    # Four decimals: neither a USD amount nor 3-digit grouping.
+    assert typed_value(ValueType.MONEY, "12.5055 USD", unknown) is None
+    # Three after the dot: not cents, so the dot must be grouping.
+    assert typed_value(ValueType.MONEY, "12.505 USD", unknown) == (
+        Money(Decimal("12505.00"), "USD"),
+        False,
+    )
+    # USD has two decimals, so "1,234" can only be one thousand two hundred and thirty-four.
+    assert typed_value(ValueType.MONEY, "1,234 USD", unknown) == (
+        Money(Decimal("1234.00"), "USD"),
+        False,
+    )
+    # The dinar has three decimals, so both readings are real amounts.
+    dinar = typed_value(ValueType.MONEY, "1,234 KWD", unknown)
+    assert dinar is not None
+    assert dinar[1] is True
     assert typed_value(ValueType.MONEY, "abc USD", unknown) is None
     assert typed_value(ValueType.QUANTITY, "12 TONNE", unknown) is None
     assert typed_value(ValueType.LINE_ITEMS, "x", unknown) is None

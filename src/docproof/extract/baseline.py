@@ -237,15 +237,21 @@ def _money(text: str, locale: Locale) -> tuple[Money, bool] | None:
     if currency is None or currency not in MINOR_UNITS:
         return None
     parsed = parse_amount(number, locale.decimal_comma)
-    reading = parsed.value if isinstance(parsed, Parsed) else None
-    if isinstance(parsed, Ambiguous):
-        reading = parsed.readings[0]
-    if reading is None:
+    readings: tuple[str, ...] = ()
+    if isinstance(parsed, Parsed):
+        readings = (parsed.value,)
+    elif isinstance(parsed, Ambiguous):
+        readings = parsed.readings
+    # The currency's precision is evidence too: "1,234 USD" cannot be 1.234 dollars.
+    valid: list[Money] = []
+    for reading in readings:
+        try:
+            valid.append(normalize_money(reading, currency))
+        except ContractError:
+            continue
+    if not valid:
         return None
-    try:
-        return normalize_money(reading, currency), isinstance(parsed, Ambiguous)
-    except ContractError:
-        return None
+    return valid[0], len(valid) > 1
 
 
 def _quantity(text: str, locale: Locale) -> tuple[Quantity, bool] | None:
