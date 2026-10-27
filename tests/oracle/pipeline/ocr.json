@@ -1,0 +1,2632 @@
+[
+  {
+    "id": "ocr-valid-basic",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "One well-formed token on a positive-size page."
+  },
+  {
+    "id": "ocr-valid-empty-tokens",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": []
+      }
+    },
+    "expected": "ok",
+    "why": "The token list may be empty."
+  },
+  {
+    "id": "ocr-valid-rotated-quad",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ROTATED",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                110,
+                10
+              ],
+              [
+                100,
+                30
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "A rotated quadrilateral is allowed; its rect is the bounding box (0, 0, 110, 30), which has positive size."
+  },
+  {
+    "id": "ocr-valid-points-reverse-order",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ],
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ]
+            ],
+            "confidence": 0.5
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "The rect is min/max of the points, so point order does not matter."
+  },
+  {
+    "id": "ocr-valid-float-coords",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                10.4,
+                20.6
+              ],
+              [
+                90.2,
+                20.6
+              ],
+              [
+                90.2,
+                40.3
+              ],
+              [
+                10.4,
+                40.3
+              ]
+            ],
+            "confidence": 0.5
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Coordinates are numbers, not only integers."
+  },
+  {
+    "id": "ocr-valid-mixed-int-float-coords",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                10,
+                20.5
+              ],
+              [
+                90.25,
+                20
+              ],
+              [
+                90,
+                40
+              ],
+              [
+                10.5,
+                40.75
+              ]
+            ],
+            "confidence": 0.5
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Integers and floats may be mixed inside one box."
+  },
+  {
+    "id": "ocr-valid-collinear-points-positive-rect",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                30,
+                30
+              ]
+            ],
+            "confidence": 0.5
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Only the rect is checked: these points give rect (0, 0, 30, 30), which has positive width and height."
+  },
+  {
+    "id": "ocr-valid-confidence-int-zero",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Confidence 0 is inside [0, 1]; an integer is a number."
+  },
+  {
+    "id": "ocr-valid-confidence-int-one",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 1
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Confidence 1 is inside [0, 1]; an integer is a number."
+  },
+  {
+    "id": "ocr-valid-confidence-float-zero",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.0
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Lower bound of [0, 1] is included."
+  },
+  {
+    "id": "ocr-valid-confidence-float-one",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 1.0
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Upper bound of [0, 1] is included."
+  },
+  {
+    "id": "ocr-valid-text-surrounding-space",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "  INV-1001 ",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Text with surrounding spaces is not whitespace-only."
+  },
+  {
+    "id": "ocr-valid-text-line",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Invoice No.: INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "A token may be a whole line with inner spaces."
+  },
+  {
+    "id": "ocr-valid-text-unicode",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\uff29\uff2e\uff36\uff0d\uff11\uff10\uff10\uff11",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Non-ASCII text is a string like any other."
+  },
+  {
+    "id": "ocr-valid-text-single-char",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "-",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "One non-whitespace character is enough."
+  },
+  {
+    "id": "ocr-valid-min-page-size",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1,
+        "height": 1,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Width and height of 1 are positive integers."
+  },
+  {
+    "id": "ocr-valid-large-page",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 20000,
+        "height": 30000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Large positive integers are fine."
+  },
+  {
+    "id": "ocr-valid-many-tokens",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Several valid tokens."
+  },
+  {
+    "id": "ocr-valid-duplicate-tokens",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": "ok",
+    "why": "Nothing forbids two identical tokens."
+  },
+  {
+    "id": "ocr-valid-key-order",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "tokens": [
+          {
+            "confidence": 0.9,
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "text": "A"
+          }
+        ],
+        "height": 100,
+        "width": 100
+      }
+    },
+    "expected": "ok",
+    "why": "Key order in an object is irrelevant."
+  },
+  {
+    "id": "ocr-bad-raw-list",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": [
+        {
+          "width": 1000,
+          "height": 1000,
+          "tokens": [
+            {
+              "text": "INV-1001",
+              "box": [
+                [
+                  100,
+                  50
+                ],
+                [
+                  180,
+                  50
+                ],
+                [
+                  180,
+                  70
+                ],
+                [
+                  100,
+                  70
+                ]
+              ],
+              "confidence": 0.98
+            }
+          ]
+        }
+      ]
+    },
+    "expected_error": "invalid_ocr",
+    "why": "The page must be an object."
+  },
+  {
+    "id": "ocr-bad-raw-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": null
+    },
+    "expected_error": "invalid_ocr",
+    "why": "The page must be an object."
+  },
+  {
+    "id": "ocr-bad-raw-empty-object",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {}
+    },
+    "expected_error": "invalid_ocr",
+    "why": "All three keys are missing."
+  },
+  {
+    "id": "ocr-bad-missing-width",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing key."
+  },
+  {
+    "id": "ocr-bad-missing-height",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing key."
+  },
+  {
+    "id": "ocr-bad-missing-tokens",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing key."
+  },
+  {
+    "id": "ocr-bad-extra-top-key",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ],
+        "page": 1
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Any other key is invalid."
+  },
+  {
+    "id": "ocr-bad-width-zero",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 0,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Width must be positive."
+  },
+  {
+    "id": "ocr-bad-width-negative",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": -1654,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Width must be positive."
+  },
+  {
+    "id": "ocr-bad-width-fraction",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1654.5,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Width must be an integer."
+  },
+  {
+    "id": "ocr-bad-width-string",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": "1654",
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Wrong type."
+  },
+  {
+    "id": "ocr-bad-width-true",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": true,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Booleans are not numbers here."
+  },
+  {
+    "id": "ocr-bad-height-false",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": false,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Booleans are not numbers here."
+  },
+  {
+    "id": "ocr-bad-height-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": null,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Wrong type."
+  },
+  {
+    "id": "ocr-bad-height-zero",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 0,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Height must be positive."
+  },
+  {
+    "id": "ocr-bad-tokens-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": null
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Tokens must be a list."
+  },
+  {
+    "id": "ocr-bad-tokens-object",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": {}
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Tokens must be a list."
+  },
+  {
+    "id": "ocr-bad-tokens-string",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": "INV-1001"
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Tokens must be a list."
+  },
+  {
+    "id": "ocr-bad-token-string",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          "INV-1001"
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Each token must be an object."
+  },
+  {
+    "id": "ocr-bad-token-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          null
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Each token must be an object."
+  },
+  {
+    "id": "ocr-bad-token-missing-text",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing token key."
+  },
+  {
+    "id": "ocr-bad-token-missing-box",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing token key."
+  },
+  {
+    "id": "ocr-bad-token-missing-confidence",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Missing token key."
+  },
+  {
+    "id": "ocr-bad-token-extra-key",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98,
+            "id": 0
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Any other token key is invalid."
+  },
+  {
+    "id": "ocr-bad-second-token-invalid",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "B",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 1.5
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Every token is checked, not only the first."
+  },
+  {
+    "id": "ocr-bad-text-number",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": 1001,
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Text must be a string."
+  },
+  {
+    "id": "ocr-bad-text-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": null,
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Text must be a string."
+  },
+  {
+    "id": "ocr-bad-text-list",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": [
+              "INV"
+            ],
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Text must be a string."
+  },
+  {
+    "id": "ocr-bad-text-empty",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Empty text is invalid."
+  },
+  {
+    "id": "ocr-bad-text-spaces",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "   ",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Whitespace-only text is invalid."
+  },
+  {
+    "id": "ocr-bad-text-tab-newline",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\t\n",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Whitespace-only text is invalid."
+  },
+  {
+    "id": "ocr-bad-text-ideographic-space",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\u3000",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "U+3000 is a whitespace character; text made only of it is whitespace-only."
+  },
+  {
+    "id": "ocr-bad-text-nbsp",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\u00a0",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "U+00A0 is a whitespace character; text made only of it is whitespace-only."
+  },
+  {
+    "id": "ocr-bad-box-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": null,
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Box must be a list of four points."
+  },
+  {
+    "id": "ocr-bad-box-string",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": "100,50,180,70",
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Box must be a list of four points."
+  },
+  {
+    "id": "ocr-bad-box-three-points",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Exactly four points."
+  },
+  {
+    "id": "ocr-bad-box-five-points",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ],
+              [
+                100,
+                50
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Exactly four points."
+  },
+  {
+    "id": "ocr-bad-box-empty",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Exactly four points."
+  },
+  {
+    "id": "ocr-bad-box-flat-eight-numbers",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              100,
+              50,
+              180,
+              50,
+              180,
+              70,
+              100,
+              70
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Points must be [x, y] pairs, not a flat list."
+  },
+  {
+    "id": "ocr-bad-box-ltrb-four-numbers",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              100,
+              50,
+              180,
+              70
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Four numbers are not four points."
+  },
+  {
+    "id": "ocr-bad-point-three-coords",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50,
+                0
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "A point is exactly [x, y]."
+  },
+  {
+    "id": "ocr-bad-point-one-coord",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "A point is exactly [x, y]."
+  },
+  {
+    "id": "ocr-bad-point-empty",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "A point is exactly [x, y]."
+  },
+  {
+    "id": "ocr-bad-point-object",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              {
+                "x": 100,
+                "y": 50
+              },
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "A point is a two-element list."
+  },
+  {
+    "id": "ocr-bad-point-string-coord",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                "100",
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Coordinates must be numbers."
+  },
+  {
+    "id": "ocr-bad-point-null-coord",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                null
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Coordinates must be numbers."
+  },
+  {
+    "id": "ocr-bad-point-bool-coord",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                true,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Booleans are not numbers here."
+  },
+  {
+    "id": "ocr-bad-rect-zero-width",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                100,
+                50
+              ],
+              [
+                100,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "All x equal: right <= left."
+  },
+  {
+    "id": "ocr-bad-rect-zero-height",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                100,
+                50
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "All y equal: bottom <= top."
+  },
+  {
+    "id": "ocr-bad-rect-single-point",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                100,
+                50
+              ],
+              [
+                100,
+                50
+              ],
+              [
+                100,
+                50
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "A point has zero width and height."
+  },
+  {
+    "id": "ocr-bad-rect-vertical-segment-float",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                10.5,
+                0
+              ],
+              [
+                10.5,
+                10
+              ],
+              [
+                10.5,
+                20
+              ],
+              [
+                10.5,
+                30
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "All x equal: right <= left."
+  },
+  {
+    "id": "ocr-bad-confidence-negative",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": -0.1
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Outside [0, 1]."
+  },
+  {
+    "id": "ocr-bad-confidence-above-one",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 1.01
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Outside [0, 1]."
+  },
+  {
+    "id": "ocr-bad-confidence-two",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 2
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Outside [0, 1]."
+  },
+  {
+    "id": "ocr-bad-confidence-percent",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 98
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Outside [0, 1]; percentages are not accepted."
+  },
+  {
+    "id": "ocr-bad-confidence-string",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": "0.98"
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Wrong type."
+  },
+  {
+    "id": "ocr-bad-confidence-null",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": null
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Wrong type."
+  },
+  {
+    "id": "ocr-bad-confidence-true",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": true
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Booleans are not numbers here, even though true would equal 1."
+  },
+  {
+    "id": "ocr-bad-confidence-false",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": false
+          }
+        ]
+      }
+    },
+    "expected_error": "invalid_ocr",
+    "why": "Booleans are not numbers here, even though false would equal 0."
+  }
+]

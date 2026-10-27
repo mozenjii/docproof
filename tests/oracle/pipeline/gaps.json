@@ -1,0 +1,308 @@
+[
+  {
+    "id": "gap-overlapping-occurrences",
+    "fn": "ground",
+    "args": {
+      "value": "aa",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "aaa",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "Every occurrence is reported, but are overlapping occurrences reported? Key aaa contains aa at start 0 and start 1, which overlap. One match or two?"
+  },
+  {
+    "id": "gap-integral-float-dimension",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1654.0,
+        "height": 2339,
+        "tokens": []
+      }
+    },
+    "question": "Width must be a positive integer. Is 1654.0 (a JSON number with a fraction part of zero, read as a float) an integer here, or a wrong type?"
+  },
+  {
+    "id": "gap-coords-outside-page",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                -5,
+                -5
+              ],
+              [
+                1200,
+                -5
+              ],
+              [
+                1200,
+                10
+              ],
+              [
+                -5,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "The contract asks only for finite numbers. Are negative coordinates, or a box extending past width/height, valid?"
+  },
+  {
+    "id": "gap-combining-mark-across-tokens",
+    "fn": "ground",
+    "args": {
+      "value": "\u00e9",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "e",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "\u0301",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                10,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "The run key is the concatenation of per-token keys, so it is e + U+0301 while the value key is U+00E9 (NFKC composes it). By the letter there is no match. Is that intended, or should the run key be normalised as a whole? Also: is a token made of only a combining mark valid text?"
+  },
+  {
+    "id": "gap-whitespace-definition",
+    "fn": "load_ocr_page",
+    "args": {
+      "raw": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\u001f",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "question": "Which characters count as whitespace? U+001F is whitespace for Python str.isspace but not in Unicode White_Space; U+200B (zero width space) and U+180E are whitespace in neither. Is text made only of such characters whitespace-only (invalid), and are they removed by key()?"
+  },
+  {
+    "id": "gap-shortest-run-rule",
+    "fn": "ground",
+    "args": {
+      "value": "ab",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ab",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "Since token keys are never empty, the no-idle-tokens rule already fixes one run per (first token, start, end). What case is 'for the same position on the page, only the shortest run is reported' meant to cover, and what is 'position' (character span, or box)?"
+  },
+  {
+    "id": "gap-key-casefold-then-nfkc",
+    "fn": "ground",
+    "args": {
+      "value": "\u1e9e",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "SS",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "key is NFKC then casefold, without a final normalisation. Casefold output is not always NFKC. Is a single pass in that order exactly what is wanted (here capital sharp s casefolds to ss and matches)?"
+  },
+  {
+    "id": "gap-box-clip-to-page",
+    "fn": "ground",
+    "args": {
+      "value": "A",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                990.5,
+                0
+              ],
+              [
+                1000.5,
+                0
+              ],
+              [
+                1000.5,
+                10
+              ],
+              [
+                990.5,
+                10
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "question": "Rounding the right edge outward can give a box past the page width (ceil(1000.5)=1001). Should the match box be clipped to the page?"
+  }
+]

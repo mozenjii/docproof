@@ -1,0 +1,5582 @@
+[
+  {
+    "id": "gr-exact-single-token",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          100,
+          50,
+          180,
+          70
+        ],
+        "confidence": 0.98,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Value equals the token's key."
+  },
+  {
+    "id": "gr-casefold-value",
+    "fn": "ground",
+    "args": {
+      "value": "inv-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          100,
+          50,
+          180,
+          70
+        ],
+        "confidence": 0.98,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Comparison is on casefolded keys."
+  },
+  {
+    "id": "gr-value-inner-spaces",
+    "fn": "ground",
+    "args": {
+      "value": " INV - 1001\n",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          100,
+          50,
+          180,
+          70
+        ],
+        "confidence": 0.98,
+        "whole_tokens": true
+      }
+    ],
+    "why": "All whitespace in the value is removed by the key."
+  },
+  {
+    "id": "gr-value-tab-nbsp",
+    "fn": "ground",
+    "args": {
+      "value": "INV\t-\u00a01001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          100,
+          50,
+          180,
+          70
+        ],
+        "confidence": 0.98,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Tab and no-break space are whitespace and removed."
+  },
+  {
+    "id": "gr-punctuation-kept",
+    "fn": "ground",
+    "args": {
+      "value": "INV 1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Only whitespace is removed; the key inv1001 is not in inv-1001."
+  },
+  {
+    "id": "gr-no-match",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1002",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Not found is an empty result, not an error."
+  },
+  {
+    "id": "gr-single-punct-char",
+    "fn": "ground",
+    "args": {
+      "value": "-",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          130,
+          50,
+          140,
+          70
+        ],
+        "confidence": 0.98,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Key inv-1001 has n=8 over width 80; '-' is [3, 4): 100+80*3/8=130, 100+80*4/8=140."
+  },
+  {
+    "id": "gr-value-longer-than-page",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1001X",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Value key is longer than any run key."
+  },
+  {
+    "id": "gr-empty-page",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": []
+      }
+    },
+    "expected": [],
+    "why": "No tokens, no match."
+  },
+  {
+    "id": "gr-substring-suffix",
+    "fn": "ground",
+    "args": {
+      "value": "ABC123",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Ref: ABC123",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          40,
+          0,
+          100,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Key ref:abc123 (n=10, 10 px each); abc123 is [4, 10) so x from 40 to 100."
+  },
+  {
+    "id": "gr-substring-prefix",
+    "fn": "ground",
+    "args": {
+      "value": "ref",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Ref: ABC123",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          30,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "ref is [0, 3) of the 10-char key: 0 to 30."
+  },
+  {
+    "id": "gr-line-token-floor-ceil",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Invoice No.: INV-1001",
+            "box": [
+              [
+                100,
+                200
+              ],
+              [
+                310,
+                200
+              ],
+              [
+                310,
+                220
+              ],
+              [
+                100,
+                220
+              ]
+            ],
+            "confidence": 0.97
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          221,
+          200,
+          310,
+          220
+        ],
+        "confidence": 0.97,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Key invoiceno.:inv-1001 has n=19 over width 210; span [11, 19): floor(100+210*11/19)=floor(221.58)=221, right=310."
+  },
+  {
+    "id": "gr-line-token-middle",
+    "fn": "ground",
+    "args": {
+      "value": "No.",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Invoice No.: INV-1001",
+            "box": [
+              [
+                100,
+                200
+              ],
+              [
+                310,
+                200
+              ],
+              [
+                310,
+                220
+              ],
+              [
+                100,
+                220
+              ]
+            ],
+            "confidence": 0.97
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          177,
+          200,
+          211,
+          220
+        ],
+        "confidence": 0.97,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Span [7, 10): floor(100+210*7/19)=floor(177.37)=177, ceil(100+210*10/19)=ceil(210.53)=211."
+  },
+  {
+    "id": "gr-line-token-two-occurrences",
+    "fn": "ground",
+    "args": {
+      "value": "INV",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Invoice No.: INV-1001",
+            "box": [
+              [
+                100,
+                200
+              ],
+              [
+                310,
+                200
+              ],
+              [
+                310,
+                220
+              ],
+              [
+                100,
+                220
+              ]
+            ],
+            "confidence": 0.97
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          100,
+          200,
+          134,
+          220
+        ],
+        "confidence": 0.97,
+        "whole_tokens": false
+      },
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          221,
+          200,
+          255,
+          220
+        ],
+        "confidence": 0.97,
+        "whole_tokens": false
+      }
+    ],
+    "why": "inv occurs at 0 (in invoice) and at 11. [0, 3): 100 to ceil(133.16)=134. [11, 14): floor(221.58)=221 to ceil(254.74)=255. Ordered by start."
+  },
+  {
+    "id": "gr-thirds-floor-ceil",
+    "fn": "ground",
+    "args": {
+      "value": "y",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "XYZ",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          33,
+          0,
+          67,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Span [1, 2) of a 3-char key over width 100: floor(33.33)=33, ceil(66.67)=67."
+  },
+  {
+    "id": "gr-merged-token",
+    "fn": "ground",
+    "args": {
+      "value": "NJ 07601",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "NJ07601",
+            "box": [
+              [
+                300,
+                400
+              ],
+              [
+                370,
+                400
+              ],
+              [
+                370,
+                420
+              ],
+              [
+                300,
+                420
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          300,
+          400,
+          370,
+          420
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Value key nj07601 equals the merged token's key."
+  },
+  {
+    "id": "gr-split-tokens-merged-value",
+    "fn": "ground",
+    "args": {
+      "value": "NJ07601",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "NJ",
+            "box": [
+              [
+                300,
+                400
+              ],
+              [
+                320,
+                400
+              ],
+              [
+                320,
+                420
+              ],
+              [
+                300,
+                420
+              ]
+            ],
+            "confidence": 0.95
+          },
+          {
+            "text": "07601",
+            "box": [
+              [
+                325,
+                400
+              ],
+              [
+                375,
+                400
+              ],
+              [
+                375,
+                420
+              ],
+              [
+                325,
+                420
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          300,
+          400,
+          375,
+          420
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Two consecutive same-line tokens; the run key nj07601 equals the value key."
+  },
+  {
+    "id": "gr-split-tokens-spaced-value",
+    "fn": "ground",
+    "args": {
+      "value": "NJ 07601",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "NJ",
+            "box": [
+              [
+                300,
+                400
+              ],
+              [
+                320,
+                400
+              ],
+              [
+                320,
+                420
+              ],
+              [
+                300,
+                420
+              ]
+            ],
+            "confidence": 0.95
+          },
+          {
+            "text": "07601",
+            "box": [
+              [
+                325,
+                400
+              ],
+              [
+                375,
+                400
+              ],
+              [
+                375,
+                420
+              ],
+              [
+                325,
+                420
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          300,
+          400,
+          375,
+          420
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Same as the merged value; spaces vanish in the key."
+  },
+  {
+    "id": "gr-three-word-run",
+    "fn": "ground",
+    "args": {
+      "value": "Acme Freight Ltd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1,
+          2
+        ],
+        "box": [
+          0,
+          0,
+          160,
+          20
+        ],
+        "confidence": 0.8,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Run of three tokens; confidence is the minimum, 0.8."
+  },
+  {
+    "id": "gr-two-of-three",
+    "fn": "ground",
+    "args": {
+      "value": "freight ltd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          1,
+          2
+        ],
+        "box": [
+          50,
+          0,
+          160,
+          20
+        ],
+        "confidence": 0.8,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Run starts at token 1; token 0 is not included."
+  },
+  {
+    "id": "gr-single-of-three",
+    "fn": "ground",
+    "args": {
+      "value": "Acme",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "No idle tokens: only token 0."
+  },
+  {
+    "id": "gr-partial-both-ends",
+    "fn": "ground",
+    "args": {
+      "value": "me Fre",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          20,
+          0,
+          80,
+          20
+        ],
+        "confidence": 0.8,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Acme [2, 4) gives left 0+40*2/4=20; Freight [0, 3) gives right 50+70*3/7=80."
+  },
+  {
+    "id": "gr-partial-three-tokens",
+    "fn": "ground",
+    "args": {
+      "value": "cmeFreightL",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1,
+          2
+        ],
+        "box": [
+          10,
+          0,
+          140,
+          20
+        ],
+        "confidence": 0.8,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Acme [1, 4): left 10; Freight whole; Ltd [0, 1): right 130+30*1/3=140."
+  },
+  {
+    "id": "gr-line-and-word-token",
+    "fn": "ground",
+    "args": {
+      "value": "No.: INV-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Invoice No.:",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                130,
+                0
+              ],
+              [
+                210,
+                0
+              ],
+              [
+                210,
+                20
+              ],
+              [
+                130,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          76,
+          0,
+          210,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Token 0 key invoiceno.: has n=11; span starts at 7: floor(120*7/11)=floor(76.36)=76. Token 1 whole."
+  },
+  {
+    "id": "gr-confidence-min-zero",
+    "fn": "ground",
+    "args": {
+      "value": "AB",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "A",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "confidence": 1
+          },
+          {
+            "text": "B",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                10
+              ],
+              [
+                20,
+                10
+              ]
+            ],
+            "confidence": 0
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          0,
+          0,
+          30,
+          10
+        ],
+        "confidence": 0,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Minimum of 1 and 0 is 0."
+  },
+  {
+    "id": "gr-different-lines-no-join",
+    "fn": "ground",
+    "args": {
+      "value": "Total 1,250.00",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "1,250.00",
+            "box": [
+              [
+                0,
+                30
+              ],
+              [
+                80,
+                30
+              ],
+              [
+                80,
+                50
+              ],
+              [
+                0,
+                50
+              ]
+            ],
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Rects do not overlap vertically, so they are not on the same line."
+  },
+  {
+    "id": "gr-different-lines-second-alone",
+    "fn": "ground",
+    "args": {
+      "value": "1,250.00",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "1,250.00",
+            "box": [
+              [
+                0,
+                30
+              ],
+              [
+                80,
+                30
+              ],
+              [
+                80,
+                50
+              ],
+              [
+                0,
+                50
+              ]
+            ],
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          1
+        ],
+        "box": [
+          0,
+          30,
+          80,
+          50
+        ],
+        "confidence": 0.85,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The second token alone matches."
+  },
+  {
+    "id": "gr-wrapped-line-no-join",
+    "fn": "ground",
+    "args": {
+      "value": "Freight Ltd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme Freight",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Ltd",
+            "box": [
+              [
+                0,
+                30
+              ],
+              [
+                30,
+                30
+              ],
+              [
+                30,
+                50
+              ],
+              [
+                0,
+                50
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "The value wraps onto the next line; tokens on different lines never join."
+  },
+  {
+    "id": "gr-line-boundary-exact-half",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                10
+              ],
+              [
+                90,
+                10
+              ],
+              [
+                90,
+                30
+              ],
+              [
+                50,
+                30
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          0,
+          0,
+          90,
+          30
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Overlap min(20,30)-max(0,10)=10 equals 0.5*20; the rule is >=, so same line."
+  },
+  {
+    "id": "gr-line-boundary-below-half",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                11
+              ],
+              [
+                90,
+                11
+              ],
+              [
+                90,
+                31
+              ],
+              [
+                50,
+                31
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Overlap 20-11=9 is below 10."
+  },
+  {
+    "id": "gr-line-shorter-height",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                40
+              ],
+              [
+                0,
+                40
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                30
+              ],
+              [
+                90,
+                30
+              ],
+              [
+                90,
+                50
+              ],
+              [
+                50,
+                50
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          0,
+          0,
+          90,
+          50
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Heights 40 and 20; overlap 40-30=10 is half of the shorter height (20), so same line."
+  },
+  {
+    "id": "gr-line-shorter-height-below",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                40
+              ],
+              [
+                0,
+                40
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                31
+              ],
+              [
+                90,
+                31
+              ],
+              [
+                90,
+                51
+              ],
+              [
+                50,
+                51
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Overlap 9 is below half of the shorter height (10)."
+  },
+  {
+    "id": "gr-line-boundary-float",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                21
+              ],
+              [
+                0,
+                21
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                10.5
+              ],
+              [
+                90,
+                10.5
+              ],
+              [
+                90,
+                31.5
+              ],
+              [
+                50,
+                31.5
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          0,
+          0,
+          90,
+          32
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Overlap 21-10.5=10.5 equals 0.5*21, so same line. Box top is min(floor 0, floor 10.5)=0, bottom max(ceil 21, ceil 31.5)=32."
+  },
+  {
+    "id": "gr-line-boundary-float-below",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                21
+              ],
+              [
+                0,
+                21
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                10.75
+              ],
+              [
+                90,
+                10.75
+              ],
+              [
+                90,
+                31.75
+              ],
+              [
+                50,
+                31.75
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Overlap 10.25 is below 10.5."
+  },
+  {
+    "id": "gr-line-chain-drift",
+    "fn": "ground",
+    "args": {
+      "value": "abcdef",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                10
+              ],
+              [
+                90,
+                10
+              ],
+              [
+                90,
+                30
+              ],
+              [
+                50,
+                30
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ef",
+            "box": [
+              [
+                100,
+                20
+              ],
+              [
+                140,
+                20
+              ],
+              [
+                140,
+                40
+              ],
+              [
+                100,
+                40
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1,
+          2
+        ],
+        "box": [
+          0,
+          0,
+          140,
+          40
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Each token is on the same line as the previous one (overlap 10 each time), which is all a run requires, even though tokens 0 and 2 do not overlap."
+  },
+  {
+    "id": "gr-union-different-tops",
+    "fn": "ground",
+    "args": {
+      "value": "bc",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                50,
+                5
+              ],
+              [
+                90,
+                5
+              ],
+              [
+                90,
+                25
+              ],
+              [
+                50,
+                25
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          20,
+          0,
+          70,
+          25
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Same line (overlap 15). ab [1, 2) gives left 20; cd [0, 1) gives right 70; top is the smaller top, bottom the larger bottom."
+  },
+  {
+    "id": "gr-not-consecutive-in-reading-order",
+    "fn": "ground",
+    "args": {
+      "value": "Acme Freight",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Invoice",
+            "box": [
+              [
+                0,
+                100
+              ],
+              [
+                80,
+                100
+              ],
+              [
+                80,
+                120
+              ],
+              [
+                0,
+                120
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Tokens 0 and 2 are on the same line but token 1 sits between them in reading order, so no run contains just those two."
+  },
+  {
+    "id": "gr-not-consecutive-first-alone",
+    "fn": "ground",
+    "args": {
+      "value": "Acme",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Invoice",
+            "box": [
+              [
+                0,
+                100
+              ],
+              [
+                80,
+                100
+              ],
+              [
+                80,
+                120
+              ],
+              [
+                0,
+                120
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Token 0 alone still matches."
+  },
+  {
+    "id": "gr-reading-order-not-geometry",
+    "fn": "ground",
+    "args": {
+      "value": "Acme Freight",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Runs follow reading order only; Acme is token 1 and Freight token 0, so the key of the only two-token run is freightacme."
+  },
+  {
+    "id": "gr-reading-order-defines-run",
+    "fn": "ground",
+    "args": {
+      "value": "Freight Acme",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Freight",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "Acme",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          0,
+          0,
+          120,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Runs are defined by reading order and same-line only, not by x position; the union box spans both rects."
+  },
+  {
+    "id": "gr-line-break-mid-sequence",
+    "fn": "ground",
+    "args": {
+      "value": "abcdef",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                0,
+                50
+              ],
+              [
+                20,
+                50
+              ],
+              [
+                20,
+                70
+              ],
+              [
+                0,
+                70
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ef",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Token 1 is on another line, breaking the chain between tokens 0 and 2."
+  },
+  {
+    "id": "gr-eight-tokens-allowed",
+    "fn": "ground",
+    "args": {
+      "value": "12345678",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "1",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "2",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                10,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "3",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                20
+              ],
+              [
+                20,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "4",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "5",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "6",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "7",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "8",
+            "box": [
+              [
+                70,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                70,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "9",
+            "box": [
+              [
+                80,
+                0
+              ],
+              [
+                90,
+                0
+              ],
+              [
+                90,
+                20
+              ],
+              [
+                80,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "box": [
+          0,
+          0,
+          80,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "A run may have up to 8 tokens."
+  },
+  {
+    "id": "gr-nine-tokens-rejected",
+    "fn": "ground",
+    "args": {
+      "value": "123456789",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "1",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "2",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                10,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "3",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                20
+              ],
+              [
+                20,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "4",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "5",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "6",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "7",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "8",
+            "box": [
+              [
+                70,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                70,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "9",
+            "box": [
+              [
+                80,
+                0
+              ],
+              [
+                90,
+                0
+              ],
+              [
+                90,
+                20
+              ],
+              [
+                80,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "A run of 9 tokens exceeds the limit."
+  },
+  {
+    "id": "gr-eight-tokens-offset",
+    "fn": "ground",
+    "args": {
+      "value": "23456789",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "1",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "2",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                10,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "3",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                20
+              ],
+              [
+                20,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "4",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "5",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "6",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "7",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "8",
+            "box": [
+              [
+                70,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                70,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "9",
+            "box": [
+              [
+                80,
+                0
+              ],
+              [
+                90,
+                0
+              ],
+              [
+                90,
+                20
+              ],
+              [
+                80,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "box": [
+          10,
+          0,
+          90,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Tokens 1 to 8 are 8 tokens."
+  },
+  {
+    "id": "gr-eight-partial-tokens",
+    "fn": "ground",
+    "args": {
+      "value": "bcdefghijklmno",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                20,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ef",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "gh",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ij",
+            "box": [
+              [
+                80,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                80,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "kl",
+            "box": [
+              [
+                100,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                100,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "mn",
+            "box": [
+              [
+                120,
+                0
+              ],
+              [
+                140,
+                0
+              ],
+              [
+                140,
+                20
+              ],
+              [
+                120,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "op",
+            "box": [
+              [
+                140,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                140,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "qr",
+            "box": [
+              [
+                160,
+                0
+              ],
+              [
+                180,
+                0
+              ],
+              [
+                180,
+                20
+              ],
+              [
+                160,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "box": [
+          10,
+          0,
+          150,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Starts at b in token 0 (left 0+20*1/2=10), ends at o in token 7 (right 140+20*1/2=150): 8 tokens."
+  },
+  {
+    "id": "gr-nine-partial-tokens-rejected",
+    "fn": "ground",
+    "args": {
+      "value": "bcdefghijklmnopq",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "cd",
+            "box": [
+              [
+                20,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                20,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ef",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "gh",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ij",
+            "box": [
+              [
+                80,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                80,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "kl",
+            "box": [
+              [
+                100,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                100,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "mn",
+            "box": [
+              [
+                120,
+                0
+              ],
+              [
+                140,
+                0
+              ],
+              [
+                140,
+                20
+              ],
+              [
+                120,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "op",
+            "box": [
+              [
+                140,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                140,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "qr",
+            "box": [
+              [
+                160,
+                0
+              ],
+              [
+                180,
+                0
+              ],
+              [
+                180,
+                20
+              ],
+              [
+                160,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [],
+    "why": "Starts in token 0 and ends in token 8: 9 tokens."
+  },
+  {
+    "id": "gr-repeated-value-two-matches",
+    "fn": "ground",
+    "args": {
+      "value": "100.00",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Subtotal",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                100,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                100,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          },
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                30
+              ],
+              [
+                50,
+                30
+              ],
+              [
+                50,
+                50
+              ],
+              [
+                0,
+                50
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                100,
+                30
+              ],
+              [
+                160,
+                30
+              ],
+              [
+                160,
+                50
+              ],
+              [
+                100,
+                50
+              ]
+            ],
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          1
+        ],
+        "box": [
+          100,
+          0,
+          160,
+          20
+        ],
+        "confidence": 0.95,
+        "whole_tokens": true
+      },
+      {
+        "tokens": [
+          3
+        ],
+        "box": [
+          100,
+          30,
+          160,
+          50
+        ],
+        "confidence": 0.85,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Subtotal equal to total: both occurrences reported, in reading order."
+  },
+  {
+    "id": "gr-total-substring-of-subtotal",
+    "fn": "ground",
+    "args": {
+      "value": "total",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Subtotal",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                100,
+                0
+              ],
+              [
+                160,
+                0
+              ],
+              [
+                160,
+                20
+              ],
+              [
+                100,
+                20
+              ]
+            ],
+            "confidence": 0.95
+          },
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                30
+              ],
+              [
+                50,
+                30
+              ],
+              [
+                50,
+                50
+              ],
+              [
+                0,
+                50
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                100,
+                30
+              ],
+              [
+                160,
+                30
+              ],
+              [
+                160,
+                50
+              ],
+              [
+                100,
+                50
+              ]
+            ],
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          30,
+          0,
+          80,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      },
+      {
+        "tokens": [
+          2
+        ],
+        "box": [
+          0,
+          30,
+          50,
+          50
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "total is [3, 8) of subtotal (n=8, width 80: 30 to 80) and the whole of token 2."
+  },
+  {
+    "id": "gr-repeated-within-token",
+    "fn": "ground",
+    "args": {
+      "value": "10",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "10 10",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          20,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      },
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          20,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Key 1010 (n=4): matches at start 0 and start 2, ordered by start."
+  },
+  {
+    "id": "gr-no-idle-leading-token",
+    "fn": "ground",
+    "args": {
+      "value": "100.00",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          1
+        ],
+        "box": [
+          60,
+          0,
+          120,
+          20
+        ],
+        "confidence": 0.8,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The run [0, 1] would have an idle first token; only [1] is reported."
+  },
+  {
+    "id": "gr-no-idle-trailing-token",
+    "fn": "ground",
+    "args": {
+      "value": "Total",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Total",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "100.00",
+            "box": [
+              [
+                60,
+                0
+              ],
+              [
+                120,
+                0
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                60,
+                20
+              ]
+            ],
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          50,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The run [0, 1] would have an idle last token; only [0] is reported, with its own confidence."
+  },
+  {
+    "id": "gr-adjacent-duplicates",
+    "fn": "ground",
+    "args": {
+      "value": "ab",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ab",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          20,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      },
+      {
+        "tokens": [
+          1
+        ],
+        "box": [
+          30,
+          0,
+          50,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Each token matches alone; runs over both tokens would have an idle token."
+  },
+  {
+    "id": "gr-span-across-boundary",
+    "fn": "ground",
+    "args": {
+      "value": "ba",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ab",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          10,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "ba is [1, 3) of abab: b of token 0 (left 10) and a of token 1 (right 40)."
+  },
+  {
+    "id": "gr-whole-token-and-split-run",
+    "fn": "ground",
+    "args": {
+      "value": "ab",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                20,
+                0
+              ],
+              [
+                20,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "a",
+            "box": [
+              [
+                30,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                30,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "b",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          20,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      },
+      {
+        "tokens": [
+          1,
+          2
+        ],
+        "box": [
+          30,
+          0,
+          60,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Token 0 matches alone; tokens 1 and 2 together form ab. Runs including idle tokens are excluded."
+  },
+  {
+    "id": "gr-same-first-token-order-by-start",
+    "fn": "ground",
+    "args": {
+      "value": "ab",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "aba",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "b",
+            "box": [
+              [
+                40,
+                0
+              ],
+              [
+                50,
+                0
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                40,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          20,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      },
+      {
+        "tokens": [
+          0,
+          1
+        ],
+        "box": [
+          20,
+          0,
+          50,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Both matches start in token 0: start 0 in run [0], start 2 in run [0, 1] (aba [2, 3) left 20; b right 50). Ordered by start."
+  },
+  {
+    "id": "gr-order-by-first-token-before-start",
+    "fn": "ground",
+    "args": {
+      "value": "ab",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "xxab",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          },
+          {
+            "text": "ab",
+            "box": [
+              [
+                50,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                50,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          20,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      },
+      {
+        "tokens": [
+          1
+        ],
+        "box": [
+          50,
+          0,
+          70,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Token 0 comes first in reading order even though its start (2) is larger than token 1's (0)."
+  },
+  {
+    "id": "gr-fullwidth-page",
+    "fn": "ground",
+    "args": {
+      "value": "INV-1001",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "\uff29\uff2e\uff36\uff0d\uff11\uff10\uff10\uff11",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          80,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "NFKC maps full-width letters, digits and hyphen-minus to ASCII."
+  },
+  {
+    "id": "gr-fullwidth-value",
+    "fn": "ground",
+    "args": {
+      "value": "\uff29\uff2e\uff36\uff0d\uff11\uff10\uff10\uff11",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                0
+              ],
+              [
+                80,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          80,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The value is normalised the same way."
+  },
+  {
+    "id": "gr-fullwidth-partial",
+    "fn": "ground",
+    "args": {
+      "value": "1250",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Total\uff1a\uff11\uff12\uff15\uff10",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                100,
+                0
+              ],
+              [
+                100,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          60,
+          0,
+          100,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Key total:1250 (n=10); 1250 is [6, 10): 60 to 100."
+  },
+  {
+    "id": "gr-ligature-whole",
+    "fn": "ground",
+    "args": {
+      "value": "office",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "O\ufb03ce",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          60,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The ffi ligature becomes ffi under NFKC; key office."
+  },
+  {
+    "id": "gr-ligature-partial-uses-key-length",
+    "fn": "ground",
+    "args": {
+      "value": "ce",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "O\ufb03ce",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                60,
+                0
+              ],
+              [
+                60,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          40,
+          0,
+          60,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "n is the key length (6), not the text length (4): ce is [4, 6), so 40 to 60."
+  },
+  {
+    "id": "gr-ligature-in-value",
+    "fn": "ground",
+    "args": {
+      "value": "\ufb01le",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "FILE",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                40,
+                0
+              ],
+              [
+                40,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The fi ligature in the value normalises to fi."
+  },
+  {
+    "id": "gr-sharp-s-casefold",
+    "fn": "ground",
+    "args": {
+      "value": "STRASSE",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Stra\u00dfe",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          70,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "Casefold maps the sharp s to ss; key strasse."
+  },
+  {
+    "id": "gr-sharp-s-value-partial",
+    "fn": "ground",
+    "args": {
+      "value": "\u00df",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "Strasse",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          40,
+          0,
+          60,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Value key ss is [4, 6) of strasse (n=7, 10 px each)."
+  },
+  {
+    "id": "gr-whitespace-inside-token",
+    "fn": "ground",
+    "args": {
+      "value": "250",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "1 250.00",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          10,
+          0,
+          40,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "Positions are in the key 1250.00 (n=7), not in the text: 250 is [1, 4)."
+  },
+  {
+    "id": "gr-whitespace-inside-token-whole",
+    "fn": "ground",
+    "args": {
+      "value": "1250.00",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "1 250.00",
+            "box": [
+              [
+                0,
+                0
+              ],
+              [
+                70,
+                0
+              ],
+              [
+                70,
+                20
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          0,
+          0,
+          70,
+          20
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "The value equals the token key once the space is removed."
+  },
+  {
+    "id": "gr-rotated-quad",
+    "fn": "ground",
+    "args": {
+      "value": "cde",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ABCDEFGHIJK",
+            "box": [
+              [
+                10,
+                0
+              ],
+              [
+                110,
+                10
+              ],
+              [
+                100,
+                30
+              ],
+              [
+                0,
+                20
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          20,
+          0,
+          50,
+          30
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "The rect is (0, 0, 110, 30); n=11 so 10 px per char; cde is [2, 5)."
+  },
+  {
+    "id": "gr-float-rect-whole",
+    "fn": "ground",
+    "args": {
+      "value": "abcd",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ABCD",
+            "box": [
+              [
+                10.4,
+                20.6
+              ],
+              [
+                90.2,
+                20.6
+              ],
+              [
+                90.2,
+                40.3
+              ],
+              [
+                10.4,
+                40.3
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          10,
+          20,
+          91,
+          41
+        ],
+        "confidence": 0.9,
+        "whole_tokens": true
+      }
+    ],
+    "why": "floor(10.4)=10, floor(20.6)=20, ceil(90.2)=91, ceil(40.3)=41."
+  },
+  {
+    "id": "gr-float-rect-partial",
+    "fn": "ground",
+    "args": {
+      "value": "bc",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "ABCD",
+            "box": [
+              [
+                10.4,
+                20.6
+              ],
+              [
+                90.2,
+                20.6
+              ],
+              [
+                90.2,
+                40.3
+              ],
+              [
+                10.4,
+                40.3
+              ]
+            ],
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "tokens": [
+          0
+        ],
+        "box": [
+          30,
+          20,
+          71,
+          41
+        ],
+        "confidence": 0.9,
+        "whole_tokens": false
+      }
+    ],
+    "why": "[1, 3): floor(10.4+79.8*1/4)=floor(30.35)=30, ceil(10.4+79.8*3/4)=ceil(70.25)=71."
+  },
+  {
+    "id": "gr-empty-value-0",
+    "fn": "ground",
+    "args": {
+      "value": "",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "The value's key is empty."
+  },
+  {
+    "id": "gr-empty-value-1",
+    "fn": "ground",
+    "args": {
+      "value": "   ",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "The value's key is empty."
+  },
+  {
+    "id": "gr-empty-value-2",
+    "fn": "ground",
+    "args": {
+      "value": "\t\n",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "The value's key is empty."
+  },
+  {
+    "id": "gr-empty-value-3",
+    "fn": "ground",
+    "args": {
+      "value": "\u3000",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "The value's key is empty."
+  },
+  {
+    "id": "gr-empty-value-4",
+    "fn": "ground",
+    "args": {
+      "value": "\u00a0\u2003",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": [
+          {
+            "text": "INV-1001",
+            "box": [
+              [
+                100,
+                50
+              ],
+              [
+                180,
+                50
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                100,
+                70
+              ]
+            ],
+            "confidence": 0.98
+          }
+        ]
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "The value's key is empty."
+  },
+  {
+    "id": "gr-empty-value-empty-page",
+    "fn": "ground",
+    "args": {
+      "value": "",
+      "page": {
+        "width": 1000,
+        "height": 1000,
+        "tokens": []
+      }
+    },
+    "expected_error": "empty_value",
+    "why": "Empty value is an error even when the page has no tokens."
+  }
+]
